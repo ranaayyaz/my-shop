@@ -61,6 +61,10 @@ export default function Shop() {
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
       {/* Premium Header */}
+            {/* Top Announcement Bar */}
+      <div className="bg-black text-white text-xs md:text-sm py-2 px-4 text-center tracking-widest font-medium uppercase">
+        ✨ Welcome to Aura Store — Discover Premium Quality, Delivered to Your Doorstep.
+      </div>
       <header className="bg-gray-900 text-white sticky top-0 z-20 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
           
