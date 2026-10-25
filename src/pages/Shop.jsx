@@ -68,9 +68,9 @@ export default function Shop() {
           <div className="hidden md:block w-32"></div>
 
           {/* Store Name Centered */}
-          <h1 className="text-3xl font-extrabold tracking-widest uppercase cursor-pointer">
-            Aura Store
-          </h1>
+        <h1 className="text-3xl font-extrabold tracking-widest uppercase cursor-pointer flex items-center justify-center gap-2">
+  <span>🛒</span> Aura Store
+</h1>
 
           {/* Cart Button */}
           <button
