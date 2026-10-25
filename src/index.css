@@ -1,1 +1,12 @@
 @import "tailwindcss";
+@theme {
+  --font-sans: "Poppins", sans-serif;
+  --color-brand: #4c1d95; /* Deep Violet */
+  --color-brand-dark: #3b0764;
+  --color-brand-light: #f3e8ff;
+}
+
+body {
+  font-family: "Poppins", sans-serif;
+  background-color: #fafafa;
+}

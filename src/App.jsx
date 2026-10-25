@@ -2,11 +2,12 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
-
+import Contact from "./pages/Contact";
 import Shop from "./pages/Shop";
 import AdminLogin from "./pages/AdminLogin";
 import AdminPanel from "./pages/AdminPanel";
 import AddProduct from "./pages/AddProduct";
+import AdminMessages from "./pages/AdminMessages";
 export default function App() {
   const [user, setUser] = useState(undefined);
 
@@ -41,6 +42,8 @@ export default function App() {
   path="/admin/add-product"
   element={user ? <AddProduct /> : <Navigate to="/admin/login" />}
 />
+<Route path="/contact" element={<Contact />} />
+<Route path="/admin/messages" element={user ? <AdminMessages /> : <Navigate to="/admin/login" />} />
       </Routes>
     </BrowserRouter>
   );

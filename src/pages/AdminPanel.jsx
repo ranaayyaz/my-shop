@@ -42,6 +42,10 @@ export default function AdminPanel() {
           <h1 className="text-xl font-bold">Admin Dashboard</h1>
          
           <div className="flex gap-3">
+
+             <Link to="/admin/messages" className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition">
+              Messages
+            </Link>
   <Link
     to="/admin/add-product"
     className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-green-700 transition"
