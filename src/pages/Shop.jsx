@@ -69,8 +69,7 @@ export default function Shop() {
       </div>
 
       {/* Premium Header */}
-<header className="bg-brand text-white sticky top-0 z-20 shadow-lg">
-
+      <header className="bg-gray-900 text-white sticky top-0 z-20 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center relative">
           
           {/* Store Name */}
@@ -135,7 +134,7 @@ export default function Shop() {
             <p className="text-gray-600 mb-8 max-w-md mx-auto md:mx-0 text-lg">
               Premium quality products, curated just for you. Shop the latest trends and get them delivered straight to your doorstep.
             </p>
-            <a href="#products" className="inline-block bg-brand text-white px-8 py-3 rounded-full font-bold hover:bg-brand-dark transition shadow-lg">
+            <a href="#products" className="inline-block bg-gray-900 text-white px-8 py-3 rounded-full font-bold hover:bg-gray-800 transition shadow-lg">
               Shop Now
             </a>
           </div>
