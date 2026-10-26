@@ -6,6 +6,8 @@ import { signOut } from "firebase/auth";
 
 export default function AdminPanel() {
   const [orders, setOrders] = useState([]);
+  const [products, setProducts] = useState([]);
+
   const nav = useNavigate();
 
   // Real-time orders fetch karna
@@ -18,16 +20,36 @@ export default function AdminPanel() {
     });
     return () => unsub();
   }, []);
+  // Real-time products fetch karna
+useEffect(() => {
+  const unsub = onSnapshot(collection(db, "products"), (snap) => {
+    setProducts(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+  });
+  return () => unsub();
+}, []);
+
 
   const updateStatus = async (id, status) => {
     await updateDoc(doc(db, "orders", id), { status });
   };
 
   const deleteOrder = async (id) => {
-    if (window.confirm("Kya aap waqai ye order delete karna chahte hain?")) {
+    if (window.confirm("Are you sure you want to delete this order? This action cannot be undone.")) {
       await deleteDoc(doc(db, "orders", id));
     }
   };
+const deleteProduct = async (id) => {
+  if (window.confirm("Are you sure you want to delete this product?")) {
+    await deleteDoc(doc(db, "products", id));
+  }
+};
+
+const confirmOnWhatsApp = (o) => {
+  let phone = (o.phone || "").replace(/\D/g, "");
+  if (phone.startsWith("0")) phone = "92" + phone.slice(1);
+  const msg = `Hello ${o.customerName}, thank you for shopping at Aura Store! Your order of Rs ${o.total} has been CONFIRMED. We will deliver it to your address soon.`;
+  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, "_blank");
+};
 
   const logout = async () => {
     await signOut(auth);
@@ -35,9 +57,9 @@ export default function AdminPanel() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-violet-50">
       {/* Admin Header */}
-      <header className="bg-gray-900 text-white p-4 shadow-md sticky top-0 z-10">
+      <header className="bg-violet-900 text-white p-4 shadow-md sticky top-0 z-10">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
           <h1 className="text-xl font-bold">Admin Dashboard</h1>
          
@@ -72,7 +94,7 @@ export default function AdminPanel() {
 
         {orders.length === 0 && (
           <div className="text-center py-20 bg-white rounded-2xl shadow-sm">
-            <p className="text-gray-500 text-lg">Abhi tak koi order nahi aaya.</p>
+            <p className="text-gray-500 text-lg">No orders found.</p>
           </div>
         )}
 
@@ -123,6 +145,13 @@ export default function AdminPanel() {
                     Deliver
                   </button>
                   <button
+  onClick={() => confirmOnWhatsApp(o)}
+  className="flex-1 bg-green-600 text-white py-2 rounded-lg text-sm font-bold hover:bg-green-700 transition"
+>
+  WhatsApp
+</button>
+
+                  <button
                     onClick={() => deleteOrder(o.id)}
                     className="bg-red-50 text-red-600 px-3 py-2 rounded-lg text-sm font-bold hover:bg-red-100 transition"
                   >
@@ -133,6 +162,39 @@ export default function AdminPanel() {
             </div>
           ))}
         </div>
+
+        {/* Manage Products Section */}
+<div className="flex justify-between items-end mt-12 mb-6">
+  <h2 className="text-2xl font-bold text-gray-800">Manage Products</h2>
+  <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-bold">
+    Total: {products.length}
+  </span>
+</div>
+
+{products.length === 0 && (
+  <div className="text-center py-20 bg-white rounded-2xl shadow-sm">
+    <p className="text-gray-500 text-lg">No products found.</p>
+  </div>
+)}
+
+<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
+  {products.map(p => (
+    <div key={p.id} className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+      <img src={p.image} alt={p.name} className="w-full h-40 object-cover" />
+      <div className="p-4">
+        <p className="font-bold text-gray-900">{p.name}</p>
+        <p className="font-extrabold text-gray-900 mt-1">Rs {p.price}</p>
+        <button
+          onClick={() => deleteProduct(p.id)}
+          className="w-full mt-3 bg-red-600 text-white py-2 rounded-lg text-sm font-bold hover:bg-red-700 transition"
+        >
+          Delete Product
+        </button>
+      </div>
+    </div>
+  ))}
+</div>
+
       </div>
     </div>
   );

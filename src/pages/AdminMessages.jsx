@@ -17,24 +17,24 @@ export default function AdminMessages() {
   }, []);
 
   const deleteMessage = async (id) => {
-    if (window.confirm("Kya aap ye message delete karna chahte hain?")) {
+    if (window.confirm("Are you sure you want to delete this message? This action cannot be undone.")) {
       await deleteDoc(doc(db, "messages", id));
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 md:p-6">
+    <div className="min-h-screen bg-violet-50 p-4 md:p-6">
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-gray-800">Customer Messages</h1>
-          <Link to="/admin" className="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-800">
+          <Link to="/admin" className="bg-violet-900 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-violet-800">
             &larr; Back to Orders
           </Link>
         </div>
 
         {messages.length === 0 && (
           <div className="text-center py-20 bg-white rounded-2xl shadow-sm">
-            <p className="text-gray-500 text-lg">Abhi tak koi message nahi aaya.</p>
+            <p className="text-gray-500 text-lg">No messages found.</p>
           </div>
         )}
 

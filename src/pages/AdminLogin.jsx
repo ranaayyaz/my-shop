@@ -15,12 +15,12 @@ export default function AdminLogin() {
       await signInWithEmailAndPassword(auth, email, pass);
       nav("/admin"); // Login successful, go to admin panel
     } catch (err) {
-      setError("Ghalat email ya password. Dobara koshish karein.");
+      setError("Invalid email or password. Please try again.");
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-900 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-violet-950 via-violet-900 to-violet-700 px-4">
       <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-sm">
         <div className="text-center mb-8">
           <h1 className="text-2xl font-extrabold text-gray-900">Admin Login</h1>
@@ -52,7 +52,7 @@ export default function AdminLogin() {
           </div>
           <button
             type="submit"
-            className="w-full bg-gray-900 text-white py-3 rounded-xl font-bold hover:bg-gray-800 transition shadow-lg mt-2"
+            className="w-full bg-violet-900 text-white py-3 rounded-xl font-bold hover:bg-violet-800 transition shadow-lg mt-2"
           >
             Login
           </button>

@@ -1,12 +1,24 @@
 @import "tailwindcss";
 @theme {
-  --font-sans: "Poppins", sans-serif;
-  --color-brand: #4c1d95; /* Deep Violet */
-  --color-brand-dark: #3b0764;
-  --color-brand-light: #f3e8ff;
+  --font-sans: "Inter", sans-serif;
+  --font-display: "Plus Jakarta Sans", sans-serif;
+  --color-brand: #4c1d95;
+  --color-brand-dark: #2e1065;
+  --color-brand-mid: #6d28d9;
+  --color-brand-light: #ede9fe;
+  --color-accent: #f59e0b;
 }
 
 body {
-  font-family: "Poppins", sans-serif;
-  background-color: #fafafa;
+  font-family: "Inter", sans-serif;
+  background-color: #faf9fc;
+  color: #1e293b;
+}
+
+h1, h2, h3 {
+  font-family: "Plus Jakarta Sans", sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
 }

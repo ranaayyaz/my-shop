@@ -33,7 +33,7 @@ export default function Shop() {
 
   const placeOrder = async () => {
     if (!form.name || !form.phone || !form.address) {
-      alert("Saari details bharein!");
+      alert("Please fill in all the details!");
       return;
     }
     try {
@@ -46,7 +46,12 @@ export default function Shop() {
         status: "pending",
         createdAt: serverTimestamp(),
       });
-      alert("Shukriya! Aapka order confirm ho gaya hai. Hum jald contact karenge.");
+      // Send order details to the store owner on WhatsApp
+const itemsText = cart.map(i => `- ${i.name} x${i.qty} - Rs ${i.price * i.qty}`).join("\n");
+const whatsappMsg = `New Order - Aura Store\n\nName: ${form.name}\nPhone: ${form.phone}\nAddress: ${form.address}\n\nItems:\n${itemsText}\n\nTotal: Rs ${total}`;
+window.open(`https://wa.me/923284433025?text=${encodeURIComponent(whatsappMsg)}`, "_blank");
+
+      alert("Thank you! Your order has been confirmed. We will contact you soon.");
       setCart([]);
       setForm({ name: "", phone: "", address: "" });
       setShowCheckout(false);
@@ -64,12 +69,12 @@ export default function Shop() {
     <div className="min-h-screen bg-gray-50 font-sans">
       
       {/* Top Announcement Bar */}
-      <div className="bg-black text-white text-xs md:text-sm py-2 px-4 text-center tracking-widest font-medium uppercase">
+      <div className="bg-violet-950 text-white text-xs md:text-sm py-2 px-4 text-center tracking-widest font-medium uppercase">
         ✨ Welcome to Aura Store — Discover Premium Quality, Delivered to Your Doorstep.
       </div>
 
       {/* Premium Header */}
-      <header className="bg-gray-900 text-white sticky top-0 z-20 shadow-lg">
+      <header className="bg-violet-900 text-white sticky top-0 z-20 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center relative">
           
           {/* Store Name */}
@@ -81,14 +86,14 @@ export default function Shop() {
           <div className="flex items-center gap-4 md:gap-6">
             
             {/* Search Icon */}
-            <button onClick={() => setShowSearch(!showSearch)} className="hover:text-gray-300 transition">
+            <button onClick={() => setShowSearch(!showSearch)} className="hover:text-violet-200 transition">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </button>
 
             {/* Cart Bag Icon with Badge */}
-            <button onClick={() => setShowCheckout(true)} className="relative hover:text-gray-300 transition">
+            <button onClick={() => setShowCheckout(true)} className="relative hover:text-violet-200 transition">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
               </svg>
@@ -122,7 +127,7 @@ export default function Shop() {
       </header>
 
       {/* Hero Section with Image */}
-      <div className="bg-gray-100 relative overflow-hidden">
+      <div className="bg-violet-50 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 py-12 md:py-20 flex flex-col md:flex-row items-center gap-10">
           
           {/* Text Side */}
@@ -134,7 +139,7 @@ export default function Shop() {
             <p className="text-gray-600 mb-8 max-w-md mx-auto md:mx-0 text-lg">
               Premium quality products, curated just for you. Shop the latest trends and get them delivered straight to your doorstep.
             </p>
-            <a href="#products" className="inline-block bg-gray-900 text-white px-8 py-3 rounded-full font-bold hover:bg-gray-800 transition shadow-lg">
+            <a href="#products" className="inline-block bg-violet-900 text-white px-8 py-3 rounded-full font-bold hover:bg-violet-800 transition shadow-lg">
               Shop Now
             </a>
           </div>
@@ -158,14 +163,14 @@ export default function Shop() {
         {/* Section Title */}
         <div className="text-center mb-10">
           <h2 className="text-3xl font-extrabold text-gray-900 uppercase tracking-wide">Featured Products</h2>
-          <div className="w-24 h-1 bg-gray-900 mx-auto mt-4 mb-3"></div>
+          <div className="w-24 h-1 bg-violet-900 mx-auto mt-4 mb-3"></div>
           <p className="text-gray-500 text-sm">Handpicked just for you</p>
         </div>
 
         {/* Products Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
           {filteredProducts.length === 0 && (
-            <p className="col-span-full text-center py-10 text-gray-500">Koi product nahi mila.</p>
+            <p className="col-span-full text-center py-10 text-gray-500">No products found.</p>
           )}
           
           {filteredProducts.map(p => (
@@ -184,7 +189,7 @@ export default function Shop() {
                   <p className="font-extrabold text-lg md:text-xl text-gray-900">Rs {p.price}</p>
                   <button
                     onClick={() => addToCart(p)}
-                    className="bg-gray-900 text-white p-2.5 rounded-full hover:bg-gray-700 transition-colors shadow-md flex items-center justify-center"
+                    className="bg-violet-900 text-white p-2.5 rounded-full hover:bg-violet-700 transition-colors shadow-md flex items-center justify-center"
                     title="Add to Cart"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -204,7 +209,7 @@ export default function Shop() {
           <div className="bg-white rounded-3xl p-6 md:p-8 w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl transform transition-transform">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold text-gray-900">Your Cart</h2>
-              <button onClick={() => setShowCheckout(false)} className="text-gray-400 hover:text-gray-900 bg-gray-100 rounded-full p-2">
+              <button onClick={() => setShowCheckout(false)} className="text-gray-400 hover:text-gray-900 bg-violet-50 rounded-full p-2">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
                 </svg>
@@ -213,7 +218,7 @@ export default function Shop() {
 
             {cart.length === 0 ? (
               <div className="text-center py-10">
-                <p className="text-gray-500 mb-4">Aapka cart khali hai.</p>
+                <p className="text-gray-500 mb-4">Your cart is empty.</p>
                 <button onClick={() => setShowCheckout(false)} className="text-blue-600 font-semibold hover:underline">Continue Shopping</button>
               </div>
             ) : (
@@ -248,26 +253,26 @@ export default function Shop() {
                     placeholder="Full Name"
                     value={form.name}
                     onChange={e => setForm({ ...form, name: e.target.value })}
-                    className="w-full border border-gray-200 bg-gray-50 p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900 transition"
+                    className="w-full border border-gray-200 bg-gray-50 p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-600transition"
                   />
                   <input
                     placeholder="Phone Number"
                     value={form.phone}
                     onChange={e => setForm({ ...form, phone: e.target.value })}
-                    className="w-full border border-gray-200 bg-gray-50 p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900 transition"
+                    className="w-full border border-gray-200 bg-gray-50 p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-600transition"
                   />
                   <textarea
                     placeholder="Complete Address"
                     value={form.address}
                     onChange={e => setForm({ ...form, address: e.target.value })}
-                    className="w-full border border-gray-200 bg-gray-50 p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900 transition"
+                    className="w-full border border-gray-200 bg-gray-50 p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-600transition"
                     rows={2}
                   />
                 </div>
 
                 <button
                   onClick={placeOrder}
-                  className="w-full bg-gray-900 text-white py-3.5 rounded-xl mt-6 font-bold hover:bg-gray-800 transition shadow-lg text-lg"
+                  className="w-full bg-violet-900 text-white py-3.5 rounded-xl mt-6 font-bold hover:bg-violet-800 transition shadow-lg text-lg"
                 >
                   Confirm Order
                 </button>
@@ -278,7 +283,7 @@ export default function Shop() {
         </div>
       )}
             {/* Footer Section */}
-      <footer className="bg-gray-900 text-gray-300 py-12 border-t border-gray-800">
+      <footer className="bg-violet-900 text-gray-300 py-12 border-t border-white/10">
         <div className="max-w-7xl mx-auto px-4 md:px-8 grid grid-cols-1 md:grid-cols-3 gap-8">
           
           {/* Brand Section */}
@@ -329,7 +334,7 @@ export default function Shop() {
         </div>
         
         {/* Copyright Bar */}
-        <div className="border-t border-gray-800 mt-10 pt-6 text-center text-xs text-gray-500">
+        <div className="border-t border-white/10 mt-10 pt-6 text-center text-xs text-gray-500">
           <p>&copy; {new Date().getFullYear()} Aura Store. All rights reserved. Made with ❤️ in Pakistan.</p>
         </div>
       </footer>

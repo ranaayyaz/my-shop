@@ -17,7 +17,7 @@ export default function AddProduct() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!image) {
-      alert("Product ki image select karein!");
+      alert("Please select an image before submitting.");
       return;
     }
 
@@ -36,7 +36,7 @@ export default function AddProduct() {
       const data = await response.json();
       
       if (!data.success) {
-        throw new Error("Image upload nahi hui. API Key check karein.");
+        throw new Error("Image upload failed. Please try again.");
       }
 
       const imageUrl = data.data.url; // ImgBB ka direct image link
@@ -49,7 +49,7 @@ export default function AddProduct() {
         image: imageUrl,
       });
 
-      alert("Product successfully add ho gaya!");
+      alert("Product added successfully!");
       nav("/admin"); 
     } catch (err) {
       alert("Error: " + err.message);
@@ -59,7 +59,7 @@ export default function AddProduct() {
 
   // ... (Baaki ka form wala code bilkul same rahega jo pehle tha) ...
   return (
-    <div className="min-h-screen bg-gray-100 p-4">
+    <div className="min-h-screen bg-violet-50 p-4">
       <div className="max-w-md mx-auto bg-white rounded-2xl shadow-lg p-6 mt-10">
         <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Add New Product</h2>
         
@@ -95,7 +95,7 @@ export default function AddProduct() {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               className="w-full border p-2.5 rounded-lg focus:ring-2 focus:ring-gray-900"
-              placeholder="Product ki tafseel..."
+              placeholder="Please provide a brief description of the product."
               rows={2}
             />
           </div>
@@ -114,7 +114,7 @@ export default function AddProduct() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-gray-900 text-white py-3 rounded-xl font-bold hover:bg-gray-800 transition shadow-lg mt-4 disabled:bg-gray-400"
+            className="w-full bg-violet-900 text-white py-3 rounded-xl font-bold hover:bg-violet-800 transition shadow-lg mt-4 disabled:bg-gray-400"
           >
             {loading ? "Uploading..." : "Save Product"}
           </button>
@@ -124,7 +124,7 @@ export default function AddProduct() {
             onClick={() => nav("/admin")}
             className="w-full text-gray-500 hover:text-gray-800 text-sm mt-2"
           >
-            Wapas jayen
+            Cancel
           </button>
         </form>
       </div>

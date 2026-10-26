@@ -24,7 +24,7 @@ export default function Contact() {
         setForm({ name: "", email: "", message: "" });
       }, 3000);
     } catch (error) {
-      alert("Message send nahi hua: " + error.message);
+      alert("Error: " + error.message);
     }
   };
 
@@ -32,12 +32,12 @@ export default function Contact() {
     <div className="min-h-screen bg-gray-50 font-sans">
       
       {/* Header */}
-      <header className="bg-gray-900 text-white py-4 shadow-lg">
+      <header className="bg-violet-900 text-white py-4 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 flex justify-between items-center">
           <Link to="/" className="text-2xl font-extrabold tracking-widest uppercase flex items-center gap-2">
             <span>🛒</span> Aura Store
           </Link>
-          <Link to="/" className="text-sm font-semibold hover:text-gray-300 transition">
+          <Link to="/" className="text-sm font-semibold hover:text-violet-200 transition">
             &larr; Back to Shop
           </Link>
         </div>
@@ -57,21 +57,21 @@ export default function Contact() {
             <h2 className="text-2xl font-bold text-gray-900 mb-6">Contact Information</h2>
             <div className="space-y-6">
               <div className="flex items-start gap-4">
-                <div className="bg-gray-100 p-3 rounded-full text-xl">📍</div>
+                <div className="bg-violet-50 p-3 rounded-full text-xl">📍</div>
                 <div>
                   <h3 className="font-bold text-gray-800">Our Location</h3>
                   <p className="text-gray-500 text-sm">Lahore, Pakistan</p>
                 </div>
               </div>
               <div className="flex items-start gap-4">
-                <div className="bg-gray-100 p-3 rounded-full text-xl">📞</div>
+                <div className="bg-violet-50 p-3 rounded-full text-xl">📞</div>
                 <div>
                   <h3 className="font-bold text-gray-800">Phone Number</h3>
                   <p className="text-gray-500 text-sm">+92 328 4433025</p>
                 </div>
               </div>
               <div className="flex items-start gap-4">
-                <div className="bg-gray-100 p-3 rounded-full text-xl">✉️</div>
+                <div className="bg-violet-50 p-3 rounded-full text-xl">✉️</div>
                 <div>
                   <h3 className="font-bold text-gray-800">Email Address</h3>
                   <p className="text-gray-500 text-sm">support@aurastore.com</p>
@@ -114,7 +114,7 @@ export default function Contact() {
                   onChange={e => setForm({...form, message: e.target.value})}
                   className="w-full border border-gray-200 bg-gray-50 p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900"
                 />
-                <button type="submit" className="w-full bg-gray-900 text-white py-3 rounded-xl font-bold hover:bg-gray-800 transition shadow-lg">
+                <button type="submit" className="w-full bg-violet-900 text-white py-3 rounded-xl font-bold hover:bg-violet-800 transition shadow-lg">
                   Send Message
                 </button>
               </form>
