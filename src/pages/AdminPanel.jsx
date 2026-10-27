@@ -60,29 +60,23 @@ const confirmOnWhatsApp = (o) => {
     <div className="min-h-screen bg-violet-50">
       {/* Admin Header */}
       <header className="bg-violet-900 text-white p-4 shadow-md sticky top-0 z-10">
-        <div className="max-w-6xl mx-auto flex justify-between items-center">
-          <h1 className="text-xl font-bold">Admin Dashboard</h1>
-         
-          <div className="flex gap-3">
+  <div className="max-w-6xl mx-auto flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+    <h1 className="text-lg sm:text-xl font-bold text-center sm:text-left">Admin Dashboard</h1>
 
-             <Link to="/admin/messages" className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition">
-              Messages
-            </Link>
-  <Link
-    to="/admin/add-product"
-    className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-green-700 transition"
-  >
-    + Add Product
-  </Link>
-  <button
-    onClick={logout}
-    className="bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-700 transition"
-  >
-    Logout
-  </button>
-</div>
-        </div>
-      </header>
+    <div className="flex flex-wrap justify-center gap-2">
+      <Link to="/admin/messages" className="flex-1 sm:flex-none text-center whitespace-nowrap bg-blue-600 text-white px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold hover:bg-blue-700 transition">
+        Messages
+      </Link>
+      <Link to="/admin/add-product" className="flex-1 sm:flex-none text-center whitespace-nowrap bg-green-600 text-white px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold hover:bg-green-700 transition">
+        + Add Product
+      </Link>
+      <button onClick={logout} className="flex-1 sm:flex-none whitespace-nowrap bg-red-600 text-white px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold hover:bg-red-700 transition">
+        Logout
+      </button>
+    </div>
+  </div>
+</header>
+
 
       <div className="max-w-6xl mx-auto p-4 md:p-6">
         <div className="flex justify-between items-end mb-6">

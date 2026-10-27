@@ -4,6 +4,8 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 import Contact from "./pages/Contact";
 import Shop from "./pages/Shop";
+import ProductDetail from "./pages/ProductDetail";
+
 import AdminLogin from "./pages/AdminLogin";
 import AdminPanel from "./pages/AdminPanel";
 import AddProduct from "./pages/AddProduct";
@@ -29,6 +31,8 @@ export default function App() {
       <Routes>
         {/* Customer Store */}
         <Route path="/" element={<Shop />} />
+        <Route path="/product/:id" element={<ProductDetail />} />
+
         
         {/* Admin Login */}
         <Route path="/admin/login" element={<AdminLogin />} />

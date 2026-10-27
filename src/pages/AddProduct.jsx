@@ -6,7 +6,11 @@ import { useNavigate } from "react-router-dom";
 export default function AddProduct() {
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
+  const [oldPrice, setOldPrice] = useState("");
+
   const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("Clothing");
+
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const nav = useNavigate();
@@ -42,10 +46,23 @@ export default function AddProduct() {
       const imageUrl = data.data.url; // ImgBB ka direct image link
 
       // 3. Firestore mein product save karna
-      await addDoc(collection(db, "products"), {
-        name,
-        price: Number(price),
+      // 3. Firestore mein product save karna
+let finalPrice = Number(price);
+let finalOldPrice = oldPrice ? Number(oldPrice) : null;
+// Agar prices ulti bhar di jayen to khud seedha kar do — bari price purani (cross wali), chhoti price sale wali
+if (finalOldPrice && finalOldPrice < finalPrice) {
+  const temp = finalPrice;
+  finalPrice = finalOldPrice;
+  finalOldPrice = temp;
+}
+await addDoc(collection(db, "products"), {
+  name,
+  price: finalPrice,
+  oldPrice: finalOldPrice,
+
+
         description,
+        category,
         image: imageUrl,
       });
 
@@ -87,6 +104,17 @@ export default function AddProduct() {
               placeholder="E.g., 1500"
             />
           </div>
+          <div>
+  <label className="block text-sm font-medium text-gray-700 mb-1">Old Price (Optional — Sale ke liye)</label>
+  <input
+    type="number"
+    value={oldPrice}
+    onChange={(e) => setOldPrice(e.target.value)}
+    className="w-full border p-2.5 rounded-lg focus:ring-2 focus:ring-violet-600"
+    placeholder="E.g., 1500 — sale nahi to khali chor dein"
+  />
+</div>
+
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
@@ -99,6 +127,18 @@ export default function AddProduct() {
               rows={2}
             />
           </div>
+<div>
+  <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+  <select
+    value={category}
+    onChange={(e) => setCategory(e.target.value)}
+    className="w-full border p-2.5 rounded-lg focus:ring-2 focus:ring-violet-600 bg-white"
+  >
+    <option value="Clothing">Clothing</option>
+    <option value="Electronics">Electronics</option>
+    <option value="Accessories">Accessories</option>
+  </select>
+</div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Product Image</label>

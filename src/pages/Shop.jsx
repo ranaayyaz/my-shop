@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { collection, getDocs, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase";
+import { Link } from "react-router-dom";
+
 
 export default function Shop() {
   const [products, setProducts] = useState([]);
@@ -8,15 +10,29 @@ export default function Shop() {
   const [showCheckout, setShowCheckout] = useState(false);
   const [form, setForm] = useState({ name: "", phone: "", address: "" });
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
+
   const [showSearch, setShowSearch] = useState(false); // Search bar toggle karne ke liye
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      const snap = await getDocs(collection(db, "products"));
-      setProducts(snap.docs.map(d => ({ id: d.id, ...d.data() })));
-    };
-    fetchProducts();
-  }, []);
+  const fetchProducts = async () => {
+    const snap = await getDocs(collection(db, "products"));
+    setProducts(snap.docs.map(d => {
+      const data = d.data();
+      let price = Number(data.price);
+      let oldPrice = data.oldPrice ? Number(data.oldPrice) : null;
+      // Ulti bhari hui prices ko dikhane se pehle khud seedha kar do
+      if (oldPrice && oldPrice < price) {
+        const temp = price;
+        price = oldPrice;
+        oldPrice = temp;
+      }
+      return { id: d.id, ...data, price, oldPrice };
+    }));
+  };
+  fetchProducts();
+}, []);
+
 
   const addToCart = (p) => {
     setCart(prev => {
@@ -47,9 +63,7 @@ export default function Shop() {
         createdAt: serverTimestamp(),
       });
       // Send order details to the store owner on WhatsApp
-const itemsText = cart.map(i => `- ${i.name} x${i.qty} - Rs ${i.price * i.qty}`).join("\n");
-const whatsappMsg = `New Order - Aura Store\n\nName: ${form.name}\nPhone: ${form.phone}\nAddress: ${form.address}\n\nItems:\n${itemsText}\n\nTotal: Rs ${total}`;
-window.open(`https://wa.me/923284433025?text=${encodeURIComponent(whatsappMsg)}`, "_blank");
+
 
       alert("Thank you! Your order has been confirmed. We will contact you soon.");
       setCart([]);
@@ -61,9 +75,11 @@ window.open(`https://wa.me/923284433025?text=${encodeURIComponent(whatsappMsg)}`
   };
 
   // Search filter
-  const filteredProducts = products.filter(p => 
-    p.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+ const filteredProducts = products.filter(p => 
+  p.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+  (selectedCategory === "All" || p.category === selectedCategory)
+);
+
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
@@ -166,6 +182,18 @@ window.open(`https://wa.me/923284433025?text=${encodeURIComponent(whatsappMsg)}`
           <div className="w-24 h-1 bg-violet-900 mx-auto mt-4 mb-3"></div>
           <p className="text-gray-500 text-sm">Handpicked just for you</p>
         </div>
+{/* Category Buttons */}
+<div className="flex flex-wrap justify-center gap-2 md:gap-3 mb-10">
+  {["All", "Clothing", "Electronics", "Accessories"].map(cat => (
+    <button
+      key={cat}
+      onClick={() => setSelectedCategory(cat)}
+      className={`px-5 py-2 rounded-full text-sm font-bold transition shadow-sm ${selectedCategory === cat ? "bg-violet-900 text-white" : "bg-white text-gray-700 border border-gray-200 hover:border-violet-400 hover:text-violet-900"}`}
+    >
+      {cat}
+    </button>
+  ))}
+</div>
 
         {/* Products Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
@@ -174,22 +202,35 @@ window.open(`https://wa.me/923284433025?text=${encodeURIComponent(whatsappMsg)}`
           )}
           
           {filteredProducts.map(p => (
-            <div key={p.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 group flex flex-col">
-              <div className="relative overflow-hidden">
-                <img 
-                  src={p.image} 
-                  alt={p.name} 
-                  className="w-full h-40 md:h-60 object-cover group-hover:scale-105 transition-transform duration-500" 
-                />
+            <div key={p.id} className="group flex flex-col">
+              <div className="relative overflow-hidden rounded-xl">
+                <Link to={`/product/${p.id}`}>
+                  <img
+                    src={p.image}
+                    alt={p.name}
+                    className="w-full h-48 md:h-64 object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                </Link>
+                {p.oldPrice && Number(p.oldPrice) > Number(p.price) && (
+                  <span className="absolute bottom-3 left-3 bg-white text-gray-900 text-xs font-semibold px-4 py-1.5 rounded-full shadow">
+                    Sale
+                  </span>
+                )}
               </div>
-              <div className="p-4 flex flex-col flex-grow">
-                <h3 className="font-bold text-gray-800 text-base md:text-lg mb-1">{p.name}</h3>
-                <p className="text-gray-500 text-xs md:text-sm mb-3 flex-grow line-clamp-2">{p.description}</p>
-                <div className="flex justify-between items-center mt-auto">
-                  <p className="font-extrabold text-lg md:text-xl text-gray-900">Rs {p.price}</p>
+              <div className="pt-3 flex flex-col flex-grow">
+                <Link to={`/product/${p.id}`}>
+                  <h3 className="font-medium text-gray-800 text-sm md:text-base leading-snug hover:text-violet-900">{p.name}</h3>
+                </Link>
+                <div className="flex items-center justify-between mt-2">
+                  <p className="text-sm md:text-base">
+                    {p.oldPrice && Number(p.oldPrice) > Number(p.price) && (
+                      <span className="text-gray-400 line-through mr-2">Rs {p.oldPrice}</span>
+                    )}
+                    <span className="font-semibold text-gray-900">Rs {p.price}</span>
+                  </p>
                   <button
                     onClick={() => addToCart(p)}
-                    className="bg-violet-900 text-white p-2.5 rounded-full hover:bg-violet-700 transition-colors shadow-md flex items-center justify-center"
+                    className="bg-violet-900 text-white p-2.5 rounded-full hover:bg-violet-700 transition-colors shadow-md flex items-center justify-center shrink-0"
                     title="Add to Cart"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -200,6 +241,7 @@ window.open(`https://wa.me/923284433025?text=${encodeURIComponent(whatsappMsg)}`
               </div>
             </div>
           ))}
+
         </div>
       </div>
 
