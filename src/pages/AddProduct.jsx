@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { collection, addDoc } from "firebase/firestore";
+import { useState, useEffect } from "react";
+import { collection, addDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 export default function AddProduct() {
   const [name, setName] = useState("");
@@ -16,35 +16,63 @@ export default function AddProduct() {
   const [loading, setLoading] = useState(false);
   const nav = useNavigate();
 
+  // Edit mode: jab URL me ?edit=<product id> ho to yehi page us product ko edit kare ga
+  const [searchParams] = useSearchParams();
+  const editId = searchParams.get("edit");
+  const [existingImage, setExistingImage] = useState("");
+
+  useEffect(() => {
+    if (!editId) return;
+    (async () => {
+      const snap = await getDoc(doc(db, "products", editId));
+      if (snap.exists()) {
+        const p = snap.data();
+        setName(p.name || "");
+        setPrice(p.price ?? "");
+        setDescription(p.description || "");
+        setCategory(p.category || "Clothing");
+        setExistingImage(p.image || "");
+        if (p.oldPrice) {
+          setOnSale(true);
+          setOldPrice(p.oldPrice);
+        }
+      }
+    })();
+  }, [editId]);
+
   // Yahan apni ImgBB API Key dalein
   const IMGBB_API_KEY = "f0aa6a980b771529c1146ba8d5ba7411";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!image) {
+    if (!image && !editId) {
       alert("Please select an image before submitting.");
       return;
     }
 
     setLoading(true);
     try {
-      // 1. Image ko FormData mein dalna
-      const formData = new FormData();
-      formData.append("image", image);
+      // Image: edit mode me purani image hi rahe gi, jab tak nayi na chuni jaye
+      let imageUrl = existingImage;
+      if (image) {
+        // 1. Image ko FormData mein dalna
+        const formData = new FormData();
+        formData.append("image", image);
 
-      // 2. ImgBB API par image upload karna
-      const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
-        method: "POST",
-        body: formData,
-      });
+        // 2. ImgBB API par image upload karna
+        const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+          method: "POST",
+          body: formData,
+        });
 
-      const data = await response.json();
+        const data = await response.json();
 
-      if (!data.success) {
-        throw new Error("Image upload failed. Please try again.");
+        if (!data.success) {
+          throw new Error("Image upload failed. Please try again.");
+        }
+
+        imageUrl = data.data.url; // ImgBB ka direct image link
       }
-
-      const imageUrl = data.data.url; // ImgBB ka direct image link
 
       // 3. Firestore mein product save karna
       let finalPrice = Number(price);
@@ -59,16 +87,23 @@ export default function AddProduct() {
           finalOldPrice = temp;
         }
       }
-      await addDoc(collection(db, "products"), {
+      const productData = {
         name,
         price: finalPrice,
         oldPrice: finalOldPrice,
         description,
         category,
         image: imageUrl,
-      });
+      };
 
-      alert("Product added successfully!");
+      if (editId) {
+        // Edit mode: purana product hi update hoga, naya nahi bane ga
+        await updateDoc(doc(db, "products", editId), productData);
+        alert("Product updated successfully!");
+      } else {
+        await addDoc(collection(db, "products"), productData);
+        alert("Product added successfully!");
+      }
       nav("/admin");
     } catch (err) {
       alert("Error: " + err.message);
@@ -79,7 +114,7 @@ export default function AddProduct() {
   return (
     <div className="min-h-screen bg-violet-50 p-4">
       <div className="max-w-md mx-auto bg-white rounded-2xl shadow-lg p-6 mt-10">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Add New Product</h2>
+        <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">{editId ? "Edit Product" : "Add New Product"}</h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -157,10 +192,16 @@ export default function AddProduct() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Product Image</label>
+            {editId && existingImage && !image && (
+              <div className="mb-2">
+                <img src={existingImage} alt="Current" className="w-24 h-24 object-cover rounded-lg border" />
+                <p className="text-xs text-gray-500 mt-1">Current image — nayi file sirf tab chunein jab image badalni ho.</p>
+              </div>
+            )}
             <input
               type="file"
               accept="image/*"
-              required
+              required={!editId}
               onChange={(e) => setImage(e.target.files[0])}
               className="w-full border p-2 rounded-lg bg-gray-50"
             />
@@ -171,7 +212,7 @@ export default function AddProduct() {
             disabled={loading}
             className="w-full bg-violet-900 text-white py-3 rounded-xl font-bold hover:bg-violet-800 transition shadow-lg mt-4 disabled:bg-gray-400"
           >
-            {loading ? "Uploading..." : "Save Product"}
+            {loading ? "Saving..." : editId ? "Update Product" : "Save Product"}
           </button>
 
           <button

@@ -85,7 +85,9 @@ export default function Footer() {
             <li><Link to="/" className="hover:text-amber-400 transition">Home</Link></li>
             <li><Link to="/cart" className="hover:text-amber-400 transition">My Cart</Link></li>
             <li><Link to="/contact" className="hover:text-amber-400 transition">Contact Us</Link></li>
-            <li><Link to="/admin/login" className="hover:text-amber-400 transition">Admin Login</Link></li>
+            <li><Link to="/shipping-info" className="hover:text-amber-400 transition">Shipping & Delivery</Link></li>
+            <li><Link to="/refund-policy" className="hover:text-amber-400 transition">Refund & Exchange</Link></li>
+            <li><Link to="/privacy-policy" className="hover:text-amber-400 transition">Privacy Policy</Link></li>
           </ul>
         </div>
 

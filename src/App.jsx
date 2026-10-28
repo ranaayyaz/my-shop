@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
@@ -12,7 +12,15 @@ import AdminMessages from "./pages/AdminMessages";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
 import CartPage from "./pages/CartPage";
+import { PrivacyPolicy, RefundPolicy, ShippingInfo } from "./pages/Policies";
 import { CartProvider } from "./context/CartContext";
+// Footer sirf customer pages par — admin pages (/admin...) par nahi
+function FooterGate() {
+  const location = useLocation();
+  if (location.pathname.startsWith("/admin")) return null;
+  return <Footer />;
+}
+
 export default function App() {
   const [user, setUser] = useState(undefined);
 
@@ -38,6 +46,9 @@ export default function App() {
         <Route path="/" element={<Shop />} />
         <Route path="/product/:id" element={<ProductDetail />} />
         <Route path="/cart" element={<CartPage />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/refund-policy" element={<RefundPolicy />} />
+        <Route path="/shipping-info" element={<ShippingInfo />} />
 
         {/* Admin Login */}
         <Route path="/admin/login" element={<AdminLogin />} />
@@ -55,8 +66,8 @@ export default function App() {
         <Route path="/admin/messages" element={user ? <AdminMessages /> : <Navigate to="/admin/login" />} />
       </Routes>
 
-      {/* Footer — har page par */}
-      <Footer />
+      {/* Footer — customer pages par (admin par nahi) */}
+      <FooterGate />
       </CartProvider>
     </BrowserRouter>
   );
