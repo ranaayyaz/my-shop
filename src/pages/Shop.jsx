@@ -42,6 +42,54 @@ const SLIDES = [
 
 
 
+
+// Why Choose Us section ke 4 points (footer se upar wala section — isi file ke andar hai)
+const WHY_FEATURES = [
+  {
+    title: "Fast Nationwide Delivery",
+    text: "Your order is packed with care and delivered to your doorstep, anywhere in Pakistan.",
+    icon: (
+      <>
+        <path d="M14 17V6a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h1" />
+        <path d="M14 9h4l3.2 3.2a1 1 0 0 1 .3.7V16a1 1 0 0 1-1 1h-1.5" />
+        <path d="M9 17h5" />
+        <circle cx="6.5" cy="17.5" r="1.8" />
+        <circle cx="16.5" cy="17.5" r="1.8" />
+      </>
+    ),
+  },
+  {
+    title: "Cash on Delivery",
+    text: "No advance payment needed — pay in cash only when your order arrives at your door.",
+    icon: (
+      <>
+        <rect x="2" y="6" width="20" height="12" rx="2" />
+        <circle cx="12" cy="12" r="2.4" />
+        <path d="M6 12h.01M18 12h.01" strokeWidth={3} />
+      </>
+    ),
+  },
+  {
+    title: "Premium Quality",
+    text: "Every product is carefully selected and quality-checked before it is dispatched to you.",
+    icon: (
+      <>
+        <circle cx="12" cy="12" r="9" />
+        <path d="M8.5 12.2l2.4 2.4 4.6-5" />
+      </>
+    ),
+  },
+  {
+    title: "Friendly Support",
+    text: "Questions about your order? Reach us Mon–Sat, 9 AM – 6 PM on call, email or WhatsApp.",
+    icon: (
+      <>
+        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z" />
+      </>
+    ),
+  },
+];
+
 export default function Shop() {
   const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -170,76 +218,129 @@ export default function Shop() {
       </section>
 
            {/* Products Section */}
-      <div id="products" className="max-w-7xl mx-auto px-4 md:px-8 mt-12 mb-8">
+      <section id="products" className="bg-gray-50 border-t border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 py-14 md:py-20">
 
-        {/* Section Title */}
-        <div className="text-center mb-10">
-          <h2 className="text-3xl font-extrabold text-gray-900 uppercase tracking-wide">Featured Products</h2>
-          <div className="w-24 h-1 bg-violet-900 mx-auto mt-4 mb-3"></div>
-          <p className="text-gray-500 text-sm">Handpicked just for you</p>
-        </div>
-{/* Category Buttons */}
-<div className="flex flex-wrap justify-center gap-2 md:gap-3 mb-10">
-  {["All", "Clothing", "Electronics", "Accessories"].map(cat => (
-    <button
-      key={cat}
-      onClick={() => setSelectedCategory(cat)}
-      className={`px-5 py-2 rounded-full text-sm font-bold transition shadow-sm ${selectedCategory === cat ? "bg-violet-900 text-white" : "bg-white text-gray-700 border border-gray-200 hover:border-violet-400 hover:text-violet-900"}`}
-    >
-      {cat}
-    </button>
-  ))}
-</div>
-
-        {/* Products Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-          {filteredProducts.length === 0 && (
-            <p className="col-span-full text-center py-10 text-gray-500">No products found.</p>
-          )}
-
-          {filteredProducts.map(p => (
-            <div key={p.id} className="group flex flex-col">
-              <div className="relative overflow-hidden rounded-xl">
-                <Link to={`/product/${p.id}`}>
-                  <img
-                    src={p.image}
-                    alt={p.name}
-                    className="w-full h-48 md:h-64 object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                </Link>
-                {p.oldPrice && Number(p.oldPrice) > Number(p.price) && (
-                  <span className="absolute bottom-3 left-3 bg-white text-gray-900 text-xs font-semibold px-4 py-1.5 rounded-full shadow">
-                    Sale
-                  </span>
-                )}
-              </div>
-              <div className="pt-3 flex flex-col flex-grow">
-                <Link to={`/product/${p.id}`}>
-                  <h3 className="font-medium text-gray-800 text-sm md:text-base leading-snug hover:text-violet-900">{p.name}</h3>
-                </Link>
-                <div className="flex items-center justify-between mt-2">
-                  <p className="text-sm md:text-base">
-                    {p.oldPrice && Number(p.oldPrice) > Number(p.price) && (
-                      <span className="text-gray-400 line-through mr-2">Rs {p.oldPrice}</span>
-                    )}
-                    <span className="font-semibold text-gray-900">Rs {p.price}</span>
-                  </p>
-                  <button
-                    onClick={() => addToCart(p)}
-                    className="bg-violet-900 text-white p-2.5 rounded-full hover:bg-violet-700 transition-colors shadow-md flex items-center justify-center shrink-0"
-                    title="Add to Cart"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
+          {/* Section Header + Category Buttons */}
+          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-5 mb-8">
+            <div>
+              <span className="text-amber-500 font-bold tracking-[0.25em] uppercase text-xs">Our Collection</span>
+              <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mt-2">Featured Products</h2>
+              <p className="text-gray-500 mt-2">
+                Handpicked just for you — {filteredProducts.length} product{filteredProducts.length !== 1 ? "s" : ""}
+              </p>
             </div>
-          ))}
+            <div className="flex flex-wrap gap-2">
+              {["All", "Clothing", "Electronics", "Accessories"].map(cat => (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`px-5 py-2 rounded-full text-sm font-bold transition ${selectedCategory === cat ? "bg-violet-900 text-white shadow-lg" : "bg-white text-gray-700 border border-gray-200 hover:border-violet-400 hover:text-violet-900 shadow-sm"}`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          </div>
 
+          <div className="w-full h-px bg-gray-100 mb-10"></div>
+
+          {/* Products Grid */}
+          {filteredProducts.length === 0 ? (
+            <div className="text-center py-16 bg-white rounded-3xl border-2 border-gray-200 shadow-sm">
+              <div className="w-16 h-16 mx-auto mb-4 bg-violet-100 rounded-full flex items-center justify-center text-2xl">🔍</div>
+              <p className="text-gray-700 font-bold text-lg">No products found</p>
+              <p className="text-gray-500 text-sm mt-1">Try a different search or category.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 md:gap-7">
+              {filteredProducts.map(p => {
+                const onSale = p.oldPrice && Number(p.oldPrice) > Number(p.price);
+                const discount = onSale ? Math.round((1 - Number(p.price) / Number(p.oldPrice)) * 100) : 0;
+                return (
+                  <div key={p.id} className="group bg-white rounded-3xl border-2 border-gray-200 hover:border-violet-500 shadow-md transition-colors duration-300 overflow-hidden flex flex-col">
+                    <div className="relative overflow-hidden">
+                      <Link to={`/product/${p.id}`}>
+                        <img
+                          src={p.image}
+                          alt={p.name}
+                          className="w-full aspect-[4/3] object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      </Link>
+                      {onSale && (
+                        <span className="absolute top-3 left-3 bg-amber-500 text-white text-[11px] font-extrabold px-2.5 py-1 rounded-full shadow">
+                          -{discount}% OFF
+                        </span>
+                      )}
+                      {onSale && (
+                        <span className="absolute bottom-3 left-3 bg-white text-gray-900 text-xs font-semibold px-4 py-1.5 rounded-full shadow">
+                          Sale
+                        </span>
+                      )}
+                    </div>
+                    <div className="p-4 flex flex-col flex-grow">
+                      {p.category && (
+                        <span className="text-[11px] font-bold tracking-wider uppercase text-violet-600">{p.category}</span>
+                      )}
+                      <Link to={`/product/${p.id}`}>
+                        <h3 className="font-semibold text-gray-900 text-sm md:text-base leading-snug mt-1 line-clamp-2 min-h-10 md:min-h-12 hover:text-violet-900">{p.name}</h3>
+                      </Link>
+                      {/* Rating — 5 yellow stars + 5.0 (design placeholder) */}
+                      <div className="flex items-center gap-0.5 mt-1.5">
+                        {[...Array(5)].map((_, i) => (
+                          <svg key={i} xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-amber-400" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118L2.05 10.1c-.783-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                          </svg>
+                        ))}
+                        <span className="text-xs font-bold text-gray-700 ml-1.5">5.0</span>
+                      </div>
+                      <div className="flex items-end justify-between mt-auto pt-2">
+                        <div>
+                          <p className={`text-xs text-gray-400 line-through h-4 ${onSale ? "" : "invisible"}`}>{onSale ? `Rs ${p.oldPrice}` : "Rs 0"}</p>
+                          <p className="font-extrabold text-violet-900 text-base md:text-lg leading-tight">Rs {p.price}</p>
+                        </div>
+                        <button
+                          onClick={() => addToCart(p)}
+                          className="bg-violet-900 text-white p-2.5 rounded-full hover:bg-violet-700 hover:scale-110 transition shadow-md flex items-center justify-center shrink-0"
+                          title="Add to Cart"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
-      </div>
+      </section>
+
+      {/* Why Choose Us — footer se upar wala section */}
+      <section className="bg-white border-t border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 py-14 md:py-16">
+          <div className="text-center max-w-2xl mx-auto">
+            <span className="text-amber-500 font-bold tracking-[0.25em] uppercase text-xs">Why Choose Us</span>
+            <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mt-2">Why Shop With Aura Store?</h2>
+            <p className="text-gray-500 mt-3">We make online shopping simple, safe and worry-free — just the way it should be.</p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6 mt-10">
+            {WHY_FEATURES.map(f => (
+              <div key={f.title} className="bg-white rounded-3xl border-2 border-gray-200 hover:border-violet-500 shadow-sm transition-colors duration-300 p-6 text-center">
+                <div className="w-14 h-14 mx-auto rounded-full bg-violet-900 flex items-center justify-center shadow-lg">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+                    {f.icon}
+                  </svg>
+                </div>
+                <h3 className="font-extrabold text-gray-900 mt-4">{f.title}</h3>
+                <p className="text-sm text-gray-500 leading-relaxed mt-1.5">{f.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
     </div>
   );
