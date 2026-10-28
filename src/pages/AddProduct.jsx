@@ -7,6 +7,7 @@ export default function AddProduct() {
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [oldPrice, setOldPrice] = useState("");
+  const [onSale, setOnSale] = useState(false);
 
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("Clothing");
@@ -38,7 +39,7 @@ export default function AddProduct() {
       });
 
       const data = await response.json();
-      
+
       if (!data.success) {
         throw new Error("Image upload failed. Please try again.");
       }
@@ -46,40 +47,40 @@ export default function AddProduct() {
       const imageUrl = data.data.url; // ImgBB ka direct image link
 
       // 3. Firestore mein product save karna
-      // 3. Firestore mein product save karna
-let finalPrice = Number(price);
-let finalOldPrice = oldPrice ? Number(oldPrice) : null;
-// Agar prices ulti bhar di jayen to khud seedha kar do — bari price purani (cross wali), chhoti price sale wali
-if (finalOldPrice && finalOldPrice < finalPrice) {
-  const temp = finalPrice;
-  finalPrice = finalOldPrice;
-  finalOldPrice = temp;
-}
-await addDoc(collection(db, "products"), {
-  name,
-  price: finalPrice,
-  oldPrice: finalOldPrice,
-
-
+      let finalPrice = Number(price);
+      let finalOldPrice = null;
+      // Sale sirf tab, jab switch ON ho aur Old Price bhari gayi ho
+      if (onSale && oldPrice) {
+        finalOldPrice = Number(oldPrice);
+        // Agar prices ulti bhar di jayen to khud seedha kar do
+        if (finalOldPrice < finalPrice) {
+          const temp = finalPrice;
+          finalPrice = finalOldPrice;
+          finalOldPrice = temp;
+        }
+      }
+      await addDoc(collection(db, "products"), {
+        name,
+        price: finalPrice,
+        oldPrice: finalOldPrice,
         description,
         category,
         image: imageUrl,
       });
 
       alert("Product added successfully!");
-      nav("/admin"); 
+      nav("/admin");
     } catch (err) {
       alert("Error: " + err.message);
     }
     setLoading(false);
   };
 
-  // ... (Baaki ka form wala code bilkul same rahega jo pehle tha) ...
   return (
     <div className="min-h-screen bg-violet-50 p-4">
       <div className="max-w-md mx-auto bg-white rounded-2xl shadow-lg p-6 mt-10">
         <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Add New Product</h2>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Product Name</label>
@@ -104,17 +105,30 @@ await addDoc(collection(db, "products"), {
               placeholder="E.g., 1500"
             />
           </div>
-          <div>
-  <label className="block text-sm font-medium text-gray-700 mb-1">Old Price (Optional — Sale ke liye)</label>
-  <input
-    type="number"
-    value={oldPrice}
-    onChange={(e) => setOldPrice(e.target.value)}
-    className="w-full border p-2.5 rounded-lg focus:ring-2 focus:ring-violet-600"
-    placeholder="E.g., 1500 — sale nahi to khali chor dein"
-  />
-</div>
 
+          <div className="flex items-center justify-between bg-violet-50 border border-violet-100 rounded-lg p-3">
+            <span className="text-sm font-medium text-gray-700">Put this product on Sale?</span>
+            <button
+              type="button"
+              onClick={() => setOnSale(!onSale)}
+              className={`px-4 py-1.5 rounded-full text-sm font-bold transition ${onSale ? "bg-violet-900 text-white" : "bg-gray-200 text-gray-600"}`}
+            >
+              {onSale ? "ON" : "OFF"}
+            </button>
+          </div>
+
+          {onSale && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Old Price (Sale se pehle wali price)</label>
+              <input
+                type="number"
+                value={oldPrice}
+                onChange={(e) => setOldPrice(e.target.value)}
+                className="w-full border p-2.5 rounded-lg focus:ring-2 focus:ring-violet-600"
+                placeholder="E.g., 5000"
+              />
+            </div>
+          )}
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
@@ -127,18 +141,19 @@ await addDoc(collection(db, "products"), {
               rows={2}
             />
           </div>
-<div>
-  <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-  <select
-    value={category}
-    onChange={(e) => setCategory(e.target.value)}
-    className="w-full border p-2.5 rounded-lg focus:ring-2 focus:ring-violet-600 bg-white"
-  >
-    <option value="Clothing">Clothing</option>
-    <option value="Electronics">Electronics</option>
-    <option value="Accessories">Accessories</option>
-  </select>
-</div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="w-full border p-2.5 rounded-lg focus:ring-2 focus:ring-violet-600 bg-white"
+            >
+              <option value="Clothing">Clothing</option>
+              <option value="Electronics">Electronics</option>
+              <option value="Accessories">Accessories</option>
+            </select>
+          </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Product Image</label>
@@ -158,7 +173,7 @@ await addDoc(collection(db, "products"), {
           >
             {loading ? "Uploading..." : "Save Product"}
           </button>
-          
+
           <button
             type="button"
             onClick={() => nav("/admin")}

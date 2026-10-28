@@ -5,11 +5,14 @@ import { auth } from "./firebase";
 import Contact from "./pages/Contact";
 import Shop from "./pages/Shop";
 import ProductDetail from "./pages/ProductDetail";
-
 import AdminLogin from "./pages/AdminLogin";
 import AdminPanel from "./pages/AdminPanel";
 import AddProduct from "./pages/AddProduct";
 import AdminMessages from "./pages/AdminMessages";
+import Footer from "./components/Footer";
+import ScrollToTop from "./components/ScrollToTop";
+import CartPage from "./pages/CartPage";
+import { CartProvider } from "./context/CartContext";
 export default function App() {
   const [user, setUser] = useState(undefined);
 
@@ -28,15 +31,17 @@ export default function App() {
 
   return (
     <BrowserRouter>
+      <ScrollToTop />
+      <CartProvider>
       <Routes>
         {/* Customer Store */}
         <Route path="/" element={<Shop />} />
         <Route path="/product/:id" element={<ProductDetail />} />
+        <Route path="/cart" element={<CartPage />} />
 
-        
         {/* Admin Login */}
         <Route path="/admin/login" element={<AdminLogin />} />
-        
+
         {/* Admin Panel (Protected - sirf login hone par khulega) */}
         <Route
           path="/admin"
@@ -45,10 +50,14 @@ export default function App() {
         <Route
   path="/admin/add-product"
   element={user ? <AddProduct /> : <Navigate to="/admin/login" />}
-/>
-<Route path="/contact" element={<Contact />} />
-<Route path="/admin/messages" element={user ? <AdminMessages /> : <Navigate to="/admin/login" />} />
+        />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/admin/messages" element={user ? <AdminMessages /> : <Navigate to="/admin/login" />} />
       </Routes>
+
+      {/* Footer — har page par */}
+      <Footer />
+      </CartProvider>
     </BrowserRouter>
   );
 }
