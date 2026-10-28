@@ -2,6 +2,8 @@ import { useState } from "react";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase";
 import { Link } from "react-router-dom";
+import Header from "../components/Header";
+
 
 export default function Contact() {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
@@ -32,16 +34,8 @@ export default function Contact() {
     <div className="min-h-screen bg-gray-50 font-sans">
       
       {/* Header */}
-      <header className="bg-violet-900 text-white py-4 shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 flex justify-between items-center">
-          <Link to="/" className="text-2xl font-extrabold tracking-widest uppercase flex items-center gap-2">
-            <span>🛒</span> Aura Store
-          </Link>
-          <Link to="/" className="text-sm font-semibold hover:text-violet-200 transition">
-            &larr; Back to Shop
-          </Link>
-        </div>
-      </header>
+      <Header showBack />
+
 
       {/* Contact Content */}
       <div className="max-w-4xl mx-auto px-4 py-16">

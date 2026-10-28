@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { doc, getDoc, collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase";
+import Header from "../components/Header";
 
 // Flat shipping charges (image wale design ki tarah)
 const SHIPPING = 250;
@@ -77,17 +78,7 @@ export default function ProductDetail() {
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
-      {/* Header */}
-      <header className="bg-violet-900 text-white py-4 shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 flex justify-between items-center">
-          <Link to="/" className="text-2xl font-extrabold tracking-widest uppercase flex items-center gap-2">
-            <span>🛒</span> Aura Store
-          </Link>
-          <Link to="/" className="text-sm font-semibold hover:text-violet-200 transition">
-            &larr; Back to Shop
-          </Link>
-        </div>
-      </header>
+      <Header showBack />
 
       {/* Product Detail */}
       <div className="max-w-6xl mx-auto px-4 py-10 md:py-16">
@@ -202,7 +193,7 @@ export default function ProductDetail() {
 
                   {/* Shipping Method */}
                   <p className="text-sm font-medium text-gray-700 mb-1.5">Shipping method</p>
-                  <div className="flex items-center gap-3 border-2 border-violet-900 rounded-xl px-4 py-3 mb-5">
+                  <div className="flex items-center gap-3 border-2 border-amber-500 rounded-xl px-4 py-3 mb-5">
                     <input type="radio" checked readOnly className="w-5 h-5 accent-blue-600" />
                     <span className="font-bold text-gray-900">Standard</span>
                     <span className="ml-auto text-gray-600">{fmt(SHIPPING)}</span>
