@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { collection, addDoc, doc, getDoc, updateDoc } from "firebase/firestore";
+import { collection, addDoc, doc, getDoc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
@@ -101,7 +101,7 @@ export default function AddProduct() {
         await updateDoc(doc(db, "products", editId), productData);
         alert("Product updated successfully!");
       } else {
-        await addDoc(collection(db, "products"), productData);
+        await addDoc(collection(db, "products"), { ...productData, createdAt: serverTimestamp() });
         alert("Product added successfully!");
       }
       nav("/admin");

@@ -43,6 +43,15 @@ const SLIDES = [
 
 
 
+// Kitna time pehle — social proof popup ke liye (e.g. "2 hours ago")
+const timeAgo = (seconds) => {
+  if (!seconds) return "recently";
+  const diff = Date.now() / 1000 - seconds;
+  if (diff < 3600) return "just now";
+  if (diff < 86400) return `${Math.floor(diff / 3600)} hour${diff >= 7200 ? "s" : ""} ago`;
+  return `${Math.floor(diff / 86400)} day${diff >= 172800 ? "s" : ""} ago`;
+};
+
 // Why Choose Us section ke 4 points (footer se upar wala section — isi file ke andar hai)
 const WHY_FEATURES = [
   {
@@ -90,8 +99,19 @@ const WHY_FEATURES = [
   },
 ];
 
+// Product ke naam ko URL ke qabil banana (e.g. "Slogan Print T-Shirt" -> "slogan-print-t-shirt")
+const slugify = (t) =>
+  (t || "").toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+// Kisi bhi product ka saaf URL: /product/<category>/<product-name>
+const productPath = (p) => `/product/${slugify(p.category || "products")}/${slugify(p.name)}`;
+
 export default function Shop() {
   const [products, setProducts] = useState([]);
+  // Social proof — asal recent orders ki chhoti khabar
+  const [recentOrders, setRecentOrders] = useState([]);
+  const [proofIdx, setProofIdx] = useState(0);
+  const [proofShow, setProofShow] = useState(false);
+  const [proofClosed, setProofClosed] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
 
@@ -136,12 +156,118 @@ export default function Shop() {
     document.getElementById("products")?.scrollIntoView({ behavior: "smooth" });
   };
 
+  // Asal recent orders lao (pichlay 7 din ke) — social proof ke liye
+  useEffect(() => {
+    (async () => {
+      try {
+        const snap = await getDocs(collection(db, "orders"));
+        const nowSec = Date.now() / 1000;
+        const list = snap.docs
+          .map(d => d.data())
+          .filter(o => o.createdAt?.seconds && nowSec - o.createdAt.seconds < 7 * 86400 && o.items?.[0]?.name)
+          .sort((a, b) => b.createdAt.seconds - a.createdAt.seconds)
+          .slice(0, 8)
+          .map(o => ({
+            city: o.city || (o.address || "").split(",").pop().trim() || "Pakistan",
+            item: o.items[0].name,
+            seconds: o.createdAt.seconds,
+          }));
+        setRecentOrders(list);
+      } catch (e) {
+        // Orders na milen to popup chup rahe ga — koi error nahi dikhana
+      }
+    })();
+  }, []);
+
+  // Popup ka cycle: pehle 6 second baad, phir har 18 second me agli khabar, 5 second dikha kar chhupa do
+  useEffect(() => {
+    if (proofClosed || recentOrders.length === 0) return;
+    const first = setTimeout(() => setProofShow(true), 6000);
+    const iv = setInterval(() => {
+      setProofIdx(i => (i + 1) % recentOrders.length);
+      setProofShow(true);
+    }, 18000);
+    return () => { clearTimeout(first); clearInterval(iv); };
+  }, [recentOrders, proofClosed]);
+
+  useEffect(() => {
+    if (!proofShow) return;
+    const t = setTimeout(() => setProofShow(false), 5000);
+    return () => clearTimeout(t);
+  }, [proofShow, proofIdx]);
+
   // Search filter
  const filteredProducts = products.filter(p =>
   p.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
   (selectedCategory === "All" || p.category === selectedCategory)
 );
+  // Home page ke khaas sections
+  const saleProducts = products.filter(x => x.oldPrice && Number(x.oldPrice) > Number(x.price)).slice(0, 4);
+  const newArrivals = [...products]
+    .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0))
+    .slice(0, 4);
 
+
+  // Product card — main grid aur neeche walay sections, sab me aik hi design
+  const renderCard = (p) => {
+              const onSale = p.oldPrice && Number(p.oldPrice) > Number(p.price);
+              const discount = onSale ? Math.round((1 - Number(p.price) / Number(p.oldPrice)) * 100) : 0;
+              return (
+                <div key={p.id} className="group bg-white rounded-3xl border-2 border-gray-200 hover:border-violet-500 shadow-md transition-colors duration-300 overflow-hidden flex flex-col">
+                  <div className="relative overflow-hidden">
+                    <Link to={productPath(p)}>
+                      <img
+                        src={p.image}
+                        alt={p.name}
+                        className="w-full aspect-[4/3] object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    </Link>
+                    {onSale && (
+                      <span className="absolute top-3 left-3 bg-amber-500 text-white text-[11px] font-extrabold px-2.5 py-1 rounded-full shadow">
+                        -{discount}% OFF
+                      </span>
+                    )}
+                    {onSale && (
+                      <span className="absolute bottom-3 left-3 bg-white text-gray-900 text-xs font-semibold px-4 py-1.5 rounded-full shadow">
+                        Sale
+                      </span>
+                    )}
+                  </div>
+                  <div className="p-4 flex flex-col flex-grow">
+                    {p.category && (
+                      <span className="text-[11px] font-bold tracking-wider uppercase text-violet-600">{p.category}</span>
+                    )}
+                    <Link to={productPath(p)}>
+                      <h3 className="font-semibold text-gray-900 text-sm md:text-base leading-snug mt-1 line-clamp-2 min-h-10 md:min-h-12 hover:text-violet-900">{p.name}</h3>
+                    </Link>
+                    {/* Rating — 5 yellow stars + 5.0 (design placeholder) */}
+                    <div className="flex items-center gap-0.5 mt-1.5">
+                      {[...Array(5)].map((_, i) => (
+                        <svg key={i} xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-amber-400" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118L2.05 10.1c-.783-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                        </svg>
+                      ))}
+                      <span className="text-xs font-bold text-gray-700 ml-1.5">5.0</span>
+                    </div>
+                    <div className="flex items-end justify-between mt-auto pt-2">
+                      <div>
+                        <p className={`text-xs text-gray-400 line-through h-4 ${onSale ? "" : "invisible"}`}>{onSale ? `Rs ${p.oldPrice}` : "Rs 0"}</p>
+                        <p className="font-extrabold text-violet-900 text-base md:text-lg leading-tight">Rs {p.price}</p>
+                      </div>
+                      <button
+                        onClick={() => addToCart(p)}
+                        className="bg-violet-900 text-white p-2.5 rounded-full hover:bg-violet-700 hover:scale-110 transition shadow-md flex items-center justify-center shrink-0"
+                        title="Add to Cart"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
@@ -217,6 +343,36 @@ export default function Shop() {
         </div>
       </section>
 
+      {/* On Sale Section */}
+      {products.length >= 5 && saleProducts.length > 0 && (
+        <section className="bg-white border-t border-gray-100">
+          <div className="max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-14">
+            <div className="mb-8">
+              <span className="text-red-500 font-bold tracking-[0.25em] uppercase text-xs">Limited Deals</span>
+              <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mt-2">On Sale</h2>
+            </div>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 md:gap-7">
+              {saleProducts.map(renderCard)}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* New Arrivals Section */}
+      {products.length >= 5 && (
+        <section className="bg-gray-50 border-t border-gray-100">
+          <div className="max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-14">
+            <div className="mb-8">
+              <span className="text-amber-500 font-bold tracking-[0.25em] uppercase text-xs">Just Landed</span>
+              <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mt-2">New Arrivals</h2>
+            </div>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 md:gap-7">
+              {newArrivals.map(renderCard)}
+            </div>
+          </div>
+        </section>
+      )}
+
            {/* Products Section */}
       <section id="products" className="bg-gray-50 border-t border-gray-100">
         <div className="max-w-7xl mx-auto px-4 md:px-8 py-14 md:py-20">
@@ -254,65 +410,7 @@ export default function Shop() {
             </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 md:gap-7">
-              {filteredProducts.map(p => {
-                const onSale = p.oldPrice && Number(p.oldPrice) > Number(p.price);
-                const discount = onSale ? Math.round((1 - Number(p.price) / Number(p.oldPrice)) * 100) : 0;
-                return (
-                  <div key={p.id} className="group bg-white rounded-3xl border-2 border-gray-200 hover:border-violet-500 shadow-md transition-colors duration-300 overflow-hidden flex flex-col">
-                    <div className="relative overflow-hidden">
-                      <Link to={`/product/${p.id}`}>
-                        <img
-                          src={p.image}
-                          alt={p.name}
-                          className="w-full aspect-[4/3] object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-                      </Link>
-                      {onSale && (
-                        <span className="absolute top-3 left-3 bg-amber-500 text-white text-[11px] font-extrabold px-2.5 py-1 rounded-full shadow">
-                          -{discount}% OFF
-                        </span>
-                      )}
-                      {onSale && (
-                        <span className="absolute bottom-3 left-3 bg-white text-gray-900 text-xs font-semibold px-4 py-1.5 rounded-full shadow">
-                          Sale
-                        </span>
-                      )}
-                    </div>
-                    <div className="p-4 flex flex-col flex-grow">
-                      {p.category && (
-                        <span className="text-[11px] font-bold tracking-wider uppercase text-violet-600">{p.category}</span>
-                      )}
-                      <Link to={`/product/${p.id}`}>
-                        <h3 className="font-semibold text-gray-900 text-sm md:text-base leading-snug mt-1 line-clamp-2 min-h-10 md:min-h-12 hover:text-violet-900">{p.name}</h3>
-                      </Link>
-                      {/* Rating — 5 yellow stars + 5.0 (design placeholder) */}
-                      <div className="flex items-center gap-0.5 mt-1.5">
-                        {[...Array(5)].map((_, i) => (
-                          <svg key={i} xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-amber-400" viewBox="0 0 20 20" fill="currentColor">
-                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118L2.05 10.1c-.783-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-                          </svg>
-                        ))}
-                        <span className="text-xs font-bold text-gray-700 ml-1.5">5.0</span>
-                      </div>
-                      <div className="flex items-end justify-between mt-auto pt-2">
-                        <div>
-                          <p className={`text-xs text-gray-400 line-through h-4 ${onSale ? "" : "invisible"}`}>{onSale ? `Rs ${p.oldPrice}` : "Rs 0"}</p>
-                          <p className="font-extrabold text-violet-900 text-base md:text-lg leading-tight">Rs {p.price}</p>
-                        </div>
-                        <button
-                          onClick={() => addToCart(p)}
-                          className="bg-violet-900 text-white p-2.5 rounded-full hover:bg-violet-700 hover:scale-110 transition shadow-md flex items-center justify-center shrink-0"
-                          title="Add to Cart"
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                          </svg>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+              {filteredProducts.map(renderCard)}
             </div>
           )}
         </div>
@@ -341,6 +439,30 @@ export default function Shop() {
           </div>
         </div>
       </section>
+
+      {/* Social Proof — asal recent order ki khabar (neeche-left) */}
+      {proofShow && !proofClosed && recentOrders[proofIdx] && (
+        <div className="fixed bottom-4 left-4 z-40 bg-white rounded-2xl shadow-2xl border border-gray-100 p-3.5 pr-9 flex items-center gap-3 max-w-[300px]">
+          <span className="w-10 h-10 rounded-full bg-violet-100 flex items-center justify-center shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-violet-900" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+            </svg>
+          </span>
+          <div className="text-[13px] leading-snug">
+            <p className="text-gray-800">
+              Someone in <strong>{recentOrders[proofIdx].city}</strong> ordered <strong>{recentOrders[proofIdx].item}</strong>
+            </p>
+            <p className="text-green-600 font-semibold text-xs mt-0.5">✓ Verified order · {timeAgo(recentOrders[proofIdx].seconds)}</p>
+          </div>
+          <button
+            onClick={() => setProofClosed(true)}
+            className="absolute top-1.5 right-2 text-gray-300 hover:text-gray-500 text-base leading-none"
+            aria-label="Close"
+          >
+            ×
+          </button>
+        </div>
+      )}
 
     </div>
   );

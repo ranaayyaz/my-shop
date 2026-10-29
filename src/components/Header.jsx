@@ -11,7 +11,7 @@ export default function Header({ searchTerm, onSearchChange, showSearch, onToggl
   return (
     <>
       {/* Top Announcement Bar */}
-      <div className="bg-gradient-to-r from-violet-950 via-violet-800 to-violet-950 text-white text-[11px] md:text-xs py-2 px-4 text-center tracking-[0.2em] font-semibold uppercase">
+      <div className="bg-gradient-to-r from-violet-950 via-violet-800 to-violet-950 text-white text-[10px] md:text-[11px] py-1.5 px-4 text-center tracking-[0.15em] font-semibold uppercase">
         ✨ Welcome to Aura Store — Discover Premium Quality, Delivered to Your Doorstep.
       </div>
 
@@ -19,18 +19,18 @@ export default function Header({ searchTerm, onSearchChange, showSearch, onToggl
       <header className="bg-gradient-to-r from-violet-950 via-violet-900 to-violet-950 text-white sticky top-0 z-20 shadow-xl">
         <div className="max-w-7xl mx-auto px-4">
           {/* Main Row: Logo + Search + Icons */}
-          <div className="flex items-center justify-between gap-3 md:gap-6 py-3.5 relative">
+          <div className="flex items-center justify-between gap-3 md:gap-6 py-2.5 relative">
 
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2.5 md:gap-3 shrink-0">
-              <span className="w-10 h-10 md:w-11 md:h-11 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-xl md:text-2xl shadow-lg ring-1 ring-white/20">
+              <span className="w-9 h-9 md:w-10 md:h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-lg md:text-xl shadow-lg ring-1 ring-white/20">
                 🛒
               </span>
               <span className="leading-none">
-                <span className="block text-lg md:text-2xl font-extrabold tracking-[0.14em] uppercase">
+                <span className="block text-base md:text-xl font-extrabold tracking-[0.14em] uppercase">
                   Aura <span className="text-amber-400">Store</span>
                 </span>
-                <span className="hidden sm:block text-[9px] md:text-[10px] font-semibold tracking-[0.32em] uppercase text-violet-200 mt-1">
+                <span className="hidden sm:block text-[9px] md:text-[10px] font-semibold tracking-[0.32em] uppercase text-violet-200 mt-0.5">
                   Premium Shopping
                 </span>
               </span>
@@ -44,9 +44,9 @@ export default function Header({ searchTerm, onSearchChange, showSearch, onToggl
                   placeholder="Search products..."
                   value={searchTerm}
                   onChange={onSearchChange}
-                  className="w-full bg-white/10 border border-white/20 rounded-full py-2.5 pl-5 pr-12 text-sm text-white placeholder:text-violet-200 focus:outline-none focus:bg-white focus:text-gray-900 focus:placeholder:text-gray-400 focus:border-white transition"
+                  className="w-full bg-white/10 border border-white/20 rounded-full py-2 pl-5 pr-12 text-sm text-white placeholder:text-violet-200 focus:outline-none focus:bg-white focus:text-gray-900 focus:placeholder:text-gray-400 focus:border-white transition"
                 />
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 absolute right-4 top-2.5 text-violet-200 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 absolute right-4 top-2 text-violet-200 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </div>
@@ -64,7 +64,7 @@ export default function Header({ searchTerm, onSearchChange, showSearch, onToggl
 
               {/* Search Icon (sirf mobile par aur sirf Home page par) */}
               {hasSearch && (
-                <button onClick={onToggleSearch} className="md:hidden w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center transition" title="Search">
+                <button onClick={onToggleSearch} className="md:hidden w-9 h-9 rounded-full hover:bg-white/10 flex items-center justify-center transition" title="Search">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
@@ -72,8 +72,8 @@ export default function Header({ searchTerm, onSearchChange, showSearch, onToggl
               )}
 
               {/* Cart — Cart page kholta hai */}
-              <Link to="/cart" className="relative w-10 h-10 md:w-11 md:h-11 rounded-full hover:bg-white/10 flex items-center justify-center transition" title="Your Cart">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 md:h-7 md:w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <Link to="/cart" className="relative w-9 h-9 md:w-10 md:h-10 rounded-full hover:bg-white/10 flex items-center justify-center transition" title="Your Cart">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 md:h-6 md:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                 </svg>
                 {/* Cart Count Badge */}

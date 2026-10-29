@@ -7,8 +7,24 @@ import { useCart } from "../context/CartContext";
 
 // Flat shipping charges (detail page wale popup ki tarah)
 const SHIPPING = 250;
+// Is amount ya zyada ke order par delivery FREE hai
+const FREE_LIMIT = 3000;
+// Expected delivery date (aaj se 4 din baad)
+const expectedDate = () =>
+  new Date(Date.now() + 4 * 24 * 3600 * 1000).toLocaleDateString("en-GB", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+  });
 
 // Price ko Rs.1,000.00 wale format mein dikhane ke liye
+
+// Product ke naam ko URL ke qabil banana (e.g. "Slogan Print T-Shirt" -> "slogan-print-t-shirt")
+const slugify = (t) =>
+  (t || "").toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+// Kisi bhi product ka saaf URL: /product/<category>/<product-name>
+const productPath = (p) => `/product/${slugify(p.category || "products")}/${slugify(p.name)}`;
+
 const fmt = (n) => "Rs." + Number(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 export default function CartPage() {
@@ -18,7 +34,8 @@ export default function CartPage() {
   const [placing, setPlacing] = useState(false);
   const [placedOrder, setPlacedOrder] = useState(null);
 
-  const total = subtotal + (cart.length > 0 ? SHIPPING : 0);
+  const shippingFee = cart.length === 0 ? 0 : subtotal >= FREE_LIMIT ? 0 : SHIPPING;
+  const total = subtotal + shippingFee;
 
   const placeOrder = async () => {
     // Guard: order save ho raha ho to dobara click par naya order nahi banna chahiye
@@ -37,13 +54,13 @@ export default function CartPage() {
         address: form.address + ", " + form.city,
         city: form.city,
         items: orderItems,
-        shipping: SHIPPING,
+        shipping: shippingFee,
         total,
         status: "pending",
         createdAt: serverTimestamp(),
       });
       // Confirmation ke liye order ki copy rakho, phir cart khali kar do
-      setPlacedOrder({ name: form.name, phone: form.phone, items: orderItems, total });
+      setPlacedOrder({ name: form.name, phone: form.phone, items: orderItems, shipping: shippingFee, total });
       clearCart();
     } catch (err) {
       setPlacing(false);
@@ -65,8 +82,11 @@ export default function CartPage() {
               </svg>
             </div>
             <h2 className="text-2xl md:text-3xl font-extrabold text-gray-900 mb-2">Order Confirmed!</h2>
-            <p className="text-gray-500 mb-6">
+            <p className="text-gray-500 mb-4">
               Thank you, {placedOrder.name}. Your order has been placed successfully. We will contact you shortly on {placedOrder.phone} to confirm your delivery.
+            </p>
+            <p className="inline-block bg-green-50 border border-green-200 text-green-800 text-sm font-semibold rounded-full px-4 py-1.5 mb-6">
+              🚚 Expected delivery by {expectedDate()}
             </p>
 
             <div className="bg-gray-200/70 rounded-lg p-4 mb-6 text-sm space-y-1.5 text-left">
@@ -78,7 +98,7 @@ export default function CartPage() {
               ))}
               <div className="flex justify-between">
                 <span className="text-gray-700">Shipping</span>
-                <span className="text-gray-900">{fmt(SHIPPING)}</span>
+                <span className={placedOrder.shipping === 0 ? "font-bold text-green-600" : "text-gray-900"}>{placedOrder.shipping === 0 ? "FREE" : fmt(placedOrder.shipping)}</span>
               </div>
               <div className="flex justify-between font-extrabold text-base pt-1">
                 <span className="text-gray-900">Total (Cash on Delivery)</span>
@@ -119,11 +139,11 @@ export default function CartPage() {
             <div className="lg:col-span-2 space-y-4">
               {cart.map(i => (
                 <div key={i.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 flex gap-4 items-center">
-                  <Link to={`/product/${i.id}`} className="shrink-0">
+                  <Link to={productPath(i)} className="shrink-0">
                     <img src={i.image} alt={i.name} className="w-20 h-20 md:w-24 md:h-24 object-cover rounded-xl" />
                   </Link>
                   <div className="flex-1 min-w-0">
-                    <Link to={`/product/${i.id}`}>
+                    <Link to={productPath(i)}>
                       <h3 className="font-bold text-gray-900 leading-snug hover:text-violet-900">{i.name}</h3>
                     </Link>
                     <p className="text-sm text-gray-500 mt-0.5">{fmt(i.price)} each</p>
@@ -151,6 +171,24 @@ export default function CartPage() {
 
             {/* Order Summary + Delivery Form */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 lg:sticky lg:top-6">
+              {/* Free Delivery Progress Bar */}
+              {subtotal < FREE_LIMIT ? (
+                <div className="mb-5">
+                  <p className="text-sm text-gray-700">
+                    Add <strong className="text-gray-900">Rs {(FREE_LIMIT - subtotal).toLocaleString()}</strong> more to get <strong className="text-green-600">FREE delivery!</strong>
+                  </p>
+                  <div className="w-full h-2.5 bg-gray-200 rounded-full mt-2 overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-amber-400 to-green-500 rounded-full transition-all duration-500"
+                      style={{ width: `${Math.min(100, (subtotal / FREE_LIMIT) * 100)}%` }}
+                    ></div>
+                  </div>
+                </div>
+              ) : (
+                <div className="mb-5 bg-green-50 border border-green-200 text-green-800 rounded-xl px-4 py-3 text-sm font-bold text-center">
+                  🎉 You have unlocked FREE delivery!
+                </div>
+              )}
               <h2 className="text-xl font-extrabold text-gray-900 mb-4">Order Summary</h2>
               <div className="bg-gray-200/70 rounded-lg p-4 text-sm space-y-1.5 mb-5">
                 <div className="flex justify-between">
@@ -159,7 +197,7 @@ export default function CartPage() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-700">Shipping</span>
-                  <span className="text-gray-900">{fmt(SHIPPING)}</span>
+                  <span className={shippingFee === 0 ? "font-bold text-green-600" : "text-gray-900"}>{shippingFee === 0 ? "FREE" : fmt(shippingFee)}</span>
                 </div>
                 <div className="flex justify-between font-extrabold text-base pt-1">
                   <span className="text-gray-900">Total</span>
