@@ -7,6 +7,7 @@ import { signOut } from "firebase/auth";
 export default function AdminPanel() {
   const [orders, setOrders] = useState([]);
   const [products, setProducts] = useState([]);
+  const [view, setView] = useState("home"); // home | orders | products — dashboard ke 2 baray cards ke liye
   const nav = useNavigate();
 
   // Real-time orders fetch karna
@@ -109,6 +110,7 @@ export default function AdminPanel() {
       </header>
 
       <div className="max-w-6xl mx-auto p-4 md:p-6">
+        {view === "home" && (<>
         {/* Dashboard Stats (Hisaab) */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
@@ -128,6 +130,41 @@ export default function AdminPanel() {
             <p className="text-3xl font-extrabold text-violet-900 mt-1">Rs {totalRevenue.toLocaleString()}</p>
           </div>
         </div>
+        {/* Dashboard ke 2 baray Cards — click karne par apna section khulta hai */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div onClick={() => setView("orders")} className="bg-white rounded-3xl border-2 border-gray-200 hover:border-violet-600 shadow-sm transition cursor-pointer p-6 md:p-8">
+            <div className="flex items-start justify-between">
+              <div className="w-14 h-14 rounded-2xl bg-violet-900 flex items-center justify-center shadow-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 5h11M9 12h11M9 19h11M4.5 5h.01M4.5 12h.01M4.5 19h.01" />
+                </svg>
+              </div>
+              {pendingCount > 0 && (
+                <span className="bg-amber-500 text-violet-950 text-xs font-extrabold px-3 py-1.5 rounded-full">{pendingCount} Pending</span>
+              )}
+            </div>
+            <h3 className="text-2xl font-extrabold text-gray-900 mt-5">Orders</h3>
+            <p className="text-gray-500 mt-1">{orders.length} total orders — confirm karein, WhatsApp par batayein, deliver mark karein</p>
+            <span className="inline-block mt-4 text-violet-900 font-extrabold text-sm">View Orders →</span>
+          </div>
+          <div onClick={() => setView("products")} className="bg-white rounded-3xl border-2 border-gray-200 hover:border-violet-600 shadow-sm transition cursor-pointer p-6 md:p-8">
+            <div className="flex items-start justify-between">
+              <div className="w-14 h-14 rounded-2xl bg-amber-500 flex items-center justify-center shadow-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-violet-950" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z" />
+                </svg>
+              </div>
+              <span className="bg-green-100 text-green-800 text-xs font-extrabold px-3 py-1.5 rounded-full">{products.length} Products</span>
+            </div>
+            <h3 className="text-2xl font-extrabold text-gray-900 mt-5">Manage Products</h3>
+            <p className="text-gray-500 mt-1">Saare products aik jagah — edit karein, delete karein, prices badlein</p>
+            <span className="inline-block mt-4 text-violet-900 font-extrabold text-sm">View Products →</span>
+          </div>
+        </div>
+        </>)}
+
+        {view === "orders" && (<>
+        <button onClick={() => setView("home")} className="mb-5 inline-flex items-center gap-2 bg-white border border-gray-200 hover:border-violet-400 text-gray-700 hover:text-violet-900 font-bold text-sm px-4 py-2 rounded-full shadow-sm transition">← Back to Dashboard</button>
 
         <div className="flex justify-between items-end mb-6">
           <h2 className="text-2xl font-bold text-gray-800">Recent Orders</h2>
@@ -208,9 +245,13 @@ export default function AdminPanel() {
             </div>
           ))}
         </div>
+        </>)}
+
+        {view === "products" && (<>
+        <button onClick={() => setView("home")} className="mb-5 inline-flex items-center gap-2 bg-white border border-gray-200 hover:border-violet-400 text-gray-700 hover:text-violet-900 font-bold text-sm px-4 py-2 rounded-full shadow-sm transition">← Back to Dashboard</button>
 
         {/* Manage Products Section */}
-        <div className="flex justify-between items-end mt-12 mb-6">
+        <div className="flex justify-between items-end mb-6">
           <h2 className="text-2xl font-bold text-gray-800">Manage Products</h2>
           <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-bold">
             Total: {products.length}
@@ -248,6 +289,7 @@ export default function AdminPanel() {
             </div>
           ))}
         </div>
+        </>)}
       </div>
     </div>
   );

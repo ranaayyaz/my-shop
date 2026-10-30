@@ -7,28 +7,28 @@ import Header from "../components/Header";
 // Home page ke barray banners (carousel) — image ya text badalna ho to sirf yahin se badle ga
 const SLIDES = [
   {
-    image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1600&q=80",
-    tag: "New Collection 2026",
-    title: "Discover Your Perfect Style",
-    text: "Premium quality clothing, curated just for you — delivered straight to your doorstep.",
-    cta: "Shop Clothing",
-    category: "Clothing",
+    image: "https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=1600&q=80",
+    tag: "Home Essentials",
+    title: "Everything Your Home Needs",
+    text: "Smart daily-use essentials for your kitchen and home — delivered straight to your doorstep.",
+    cta: "Shop Home & Kitchen",
+    category: "Home & Kitchen",
   },
   {
     image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=1600&q=80",
     tag: "Latest Tech",
-    title: "Electronics That Upgrade Your Life",
+    title: "Gadgets That Upgrade Your Life",
     text: "Headphones, gadgets and much more — genuine products at prices you will love.",
-    cta: "Shop Electronics",
-    category: "Electronics",
+    cta: "Shop Gadgets",
+    category: "Gadgets & Electronics",
   },
   {
     image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1600&q=80",
-    tag: "Premium Accessories",
+    tag: "Fashion & Accessories",
     title: "Details That Complete Your Look",
     text: "Watches and accessories crafted to stand out — finish your style the right way.",
-    cta: "Shop Accessories",
-    category: "Accessories",
+    cta: "Shop Fashion",
+    category: "Fashion & Accessories",
   },
   {
     image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1600&q=80",
@@ -40,8 +40,25 @@ const SLIDES = [
   },
 ];
 
-
-
+// Home page ki 3 categories (Featured Products se upar wala section) —
+// card par click karne se usi category ke products filter ho jate hain
+const CATEGORIES = [
+  {
+    name: "Home & Kitchen",
+    tagline: "Daily home essentials",
+    image: "https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=900&q=80",
+  },
+  {
+    name: "Gadgets & Electronics",
+    tagline: "Gadgets & devices",
+    image: "https://images.unsplash.com/photo-1550009158-9ebf69173e03?auto=format&fit=crop&w=900&q=80",
+  },
+  {
+    name: "Fashion & Accessories",
+    tagline: "Watches, shades & style",
+    image: "https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&w=900&q=80",
+  },
+];
 
 // Kitna time pehle — social proof popup ke liye (e.g. "2 hours ago")
 const timeAgo = (seconds) => {
@@ -345,7 +362,7 @@ export default function Shop() {
 
       {/* On Sale Section */}
       {products.length >= 5 && saleProducts.length > 0 && (
-        <section className="bg-white border-t border-gray-100">
+        <section>
           <div className="max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-14">
             <div className="mb-8">
               <span className="text-red-500 font-bold tracking-[0.25em] uppercase text-xs">Limited Deals</span>
@@ -360,7 +377,7 @@ export default function Shop() {
 
       {/* New Arrivals Section */}
       {products.length >= 5 && (
-        <section className="bg-gray-50 border-t border-gray-100">
+        <section>
           <div className="max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-14">
             <div className="mb-8">
               <span className="text-amber-500 font-bold tracking-[0.25em] uppercase text-xs">Just Landed</span>
@@ -373,33 +390,50 @@ export default function Shop() {
         </section>
       )}
 
+      {/* Categories Section — card par click = usi category ke products */}
+      <section>
+        <div className="max-w-7xl mx-auto px-4 md:px-8 py-14 md:py-16">
+          <div className="text-center mb-10">
+            <span className="text-amber-500 font-bold tracking-[0.25em] uppercase text-xs">Shop by Category</span>
+            <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mt-2">Browse Categories</h2>
+            <p className="text-gray-500 mt-2">"Choose your favourite category — products will filter automatically"</p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 md:gap-7">
+            {CATEGORIES.map((c) => (
+              <div
+                key={c.name}
+                onClick={() => goToCategory(c.name)}
+                className="group relative overflow-hidden rounded-3xl border-2 border-gray-200 hover:border-violet-600 transition cursor-pointer"
+              >
+                <img
+                  src={c.image}
+                  alt={c.name}
+                  className="w-full h-56 md:h-64 object-cover transition duration-500 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-violet-950/80 via-violet-950/20 to-transparent"></div>
+                <div className="absolute bottom-0 left-0 right-0 p-5">
+                  <h3 className="text-white text-xl md:text-2xl font-extrabold">{c.name}</h3>
+                  <p className="text-violet-200 text-sm mt-0.5">{c.tagline}</p>
+                  <span className="inline-block mt-3 bg-amber-500 text-violet-950 text-xs font-extrabold px-3.5 py-1.5 rounded-full">Shop Now →</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
            {/* Products Section */}
-      <section id="products" className="bg-gray-50 border-t border-gray-100">
+      <section id="products">
         <div className="max-w-7xl mx-auto px-4 md:px-8 py-14 md:py-20">
 
-          {/* Section Header + Category Buttons */}
-          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-5 mb-8">
-            <div>
-              <span className="text-amber-500 font-bold tracking-[0.25em] uppercase text-xs">Our Collection</span>
-              <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mt-2">Featured Products</h2>
-              <p className="text-gray-500 mt-2">
-                Handpicked just for you — {filteredProducts.length} product{filteredProducts.length !== 1 ? "s" : ""}
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {["All", "Clothing", "Electronics", "Accessories"].map(cat => (
-                <button
-                  key={cat}
-                  onClick={() => setSelectedCategory(cat)}
-                  className={`px-5 py-2 rounded-full text-sm font-bold transition ${selectedCategory === cat ? "bg-violet-900 text-white shadow-lg" : "bg-white text-gray-700 border border-gray-200 hover:border-violet-400 hover:text-violet-900 shadow-sm"}`}
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
+          {/* Section Header */}
+          <div className="mb-10">
+            <span className="text-amber-500 font-bold tracking-[0.25em] uppercase text-xs">Our Collection</span>
+            <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mt-2">Featured Products</h2>
+            <p className="text-gray-500 mt-2">
+              Handpicked just for you — {filteredProducts.length} product{filteredProducts.length !== 1 ? "s" : ""}
+            </p>
           </div>
-
-          <div className="w-full h-px bg-gray-100 mb-10"></div>
 
           {/* Products Grid */}
           {filteredProducts.length === 0 ? (
@@ -417,7 +451,7 @@ export default function Shop() {
       </section>
 
       {/* Why Choose Us — footer se upar wala section */}
-      <section className="bg-white border-t border-gray-100">
+      <section>
         <div className="max-w-7xl mx-auto px-4 md:px-8 py-14 md:py-16">
           <div className="text-center max-w-2xl mx-auto">
             <span className="text-amber-500 font-bold tracking-[0.25em] uppercase text-xs">Why Choose Us</span>

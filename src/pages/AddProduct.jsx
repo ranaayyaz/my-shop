@@ -10,7 +10,7 @@ export default function AddProduct() {
   const [onSale, setOnSale] = useState(false);
 
   const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("Clothing");
+  const [category, setCategory] = useState("Home & Kitchen");
 
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -30,7 +30,7 @@ export default function AddProduct() {
         setName(p.name || "");
         setPrice(p.price ?? "");
         setDescription(p.description || "");
-        setCategory(p.category || "Clothing");
+        setCategory(p.category || "Home & Kitchen");
         setExistingImage(p.image || "");
         if (p.oldPrice) {
           setOnSale(true);
@@ -41,7 +41,40 @@ export default function AddProduct() {
   }, [editId]);
 
   // Yahan apni ImgBB API Key dalein
-  const IMGBB_API_KEY = "f0aa6a980b771529c1146ba8d5ba7411";
+  // Photo ko compress karke data-URL banana — photo seedha apne database (Firestore)
+  // me save hogi, is liye bari photo ko pehle chhota karna zaroori hai (limit 1MB hai)
+  const compressImage = (file) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = new Image();
+        img.onload = () => {
+          const MAX = 1000;
+          let width = img.width;
+          let height = img.height;
+          if (width > MAX || height > MAX) {
+            const scale = MAX / Math.max(width, height);
+            width = Math.round(width * scale);
+            height = Math.round(height * scale);
+          }
+          const canvas = document.createElement("canvas");
+          canvas.width = width;
+          canvas.height = height;
+          canvas.getContext("2d").drawImage(img, 0, 0, width, height);
+          let dataUrl = canvas.toDataURL("image/jpeg", 0.75);
+          let q = 0.6;
+          while (dataUrl.length > 900000 && q > 0.25) {
+            dataUrl = canvas.toDataURL("image/jpeg", q);
+            q -= 0.15;
+          }
+          resolve(dataUrl);
+        };
+        img.onerror = reject;
+        img.src = reader.result;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -55,23 +88,9 @@ export default function AddProduct() {
       // Image: edit mode me purani image hi rahe gi, jab tak nayi na chuni jaye
       let imageUrl = existingImage;
       if (image) {
-        // 1. Image ko FormData mein dalna
-        const formData = new FormData();
-        formData.append("image", image);
-
-        // 2. ImgBB API par image upload karna
-        const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
-          method: "POST",
-          body: formData,
-        });
-
-        const data = await response.json();
-
-        if (!data.success) {
-          throw new Error("Image upload failed. Please try again.");
-        }
-
-        imageUrl = data.data.url; // ImgBB ka direct image link
+        // Photo compress karke seedha database me save hogi
+        // (purana bahir wala upload tareeqa hata diya hai — us ki error se Saving atak jata tha)
+        imageUrl = await compressImage(image);
       }
 
       // 3. Firestore mein product save karna
@@ -184,9 +203,9 @@ export default function AddProduct() {
               onChange={(e) => setCategory(e.target.value)}
               className="w-full border p-2.5 rounded-lg focus:ring-2 focus:ring-violet-600 bg-white"
             >
-              <option value="Clothing">Clothing</option>
-              <option value="Electronics">Electronics</option>
-              <option value="Accessories">Accessories</option>
+              <option value="Home & Kitchen">Home & Kitchen</option>
+              <option value="Gadgets & Electronics">Gadgets & Electronics</option>
+              <option value="Fashion & Accessories">Fashion & Accessories</option>
             </select>
           </div>
 

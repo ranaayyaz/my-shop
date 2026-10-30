@@ -95,9 +95,9 @@ export default function Footer() {
         <div>
           <h3 className="text-white font-extrabold mb-5 text-sm uppercase tracking-[0.2em]">Categories</h3>
           <ul className="space-y-3 text-sm">
-            <li><Link to="/" className="hover:text-amber-400 transition">Clothing</Link></li>
-            <li><Link to="/" className="hover:text-amber-400 transition">Electronics</Link></li>
-            <li><Link to="/" className="hover:text-amber-400 transition">Accessories</Link></li>
+            <li><Link to="/" className="hover:text-amber-400 transition">Home & Kitchen</Link></li>
+            <li><Link to="/" className="hover:text-amber-400 transition">Gadgets & Electronics</Link></li>
+            <li><Link to="/" className="hover:text-amber-400 transition">Fashion & Accessories</Link></li>
             <li><Link to="/" className="hover:text-amber-400 transition">All Products</Link></li>
           </ul>
         </div>
