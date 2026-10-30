@@ -218,6 +218,9 @@ export default function Shop() {
   p.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
   (selectedCategory === "All" || p.category === selectedCategory)
 );
+
+  // Neeche walay baray Featured section ke liye — Headphones wala product khud uthata hai
+  const spotlight = products.find(p => (p.name || "").toLowerCase().includes("bluetooth headphones"));
   // Home page ke khaas sections
   const saleProducts = products.filter(x => x.oldPrice && Number(x.oldPrice) > Number(x.price)).slice(0, 4);
   const newArrivals = [...products]
@@ -396,7 +399,7 @@ export default function Shop() {
           <div className="text-center mb-10">
             <span className="text-amber-500 font-bold tracking-[0.25em] uppercase text-xs">Shop by Category</span>
             <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mt-2">Browse Categories</h2>
-            <p className="text-gray-500 mt-2">"Choose your favourite category — products will filter automatically"</p>
+            <p className="text-gray-500 mt-2">Choose your favourite category — products will filter automatically</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 md:gap-7">
             {CATEGORIES.map((c) => (
@@ -449,6 +452,37 @@ export default function Shop() {
           )}
         </div>
       </section>
+
+      {/* Featured Spotlight — aik product baray size me (Virtual Market style) */}
+      {spotlight && (
+        <section>
+          <div className="max-w-7xl mx-auto px-4 md:px-8 pb-14 md:pb-20">
+            <div className="overflow-hidden rounded-3xl bg-gradient-to-r from-violet-950 via-violet-900 to-violet-800 shadow-xl">
+              <div className="grid md:grid-cols-2">
+                <div className="order-2 md:order-1 p-8 md:p-12 flex flex-col justify-center">
+                  <span className="text-amber-400 font-bold tracking-[0.25em] uppercase text-xs">Featured Product</span>
+                  <h2 className="text-3xl md:text-4xl font-extrabold text-white mt-3">{spotlight.name}</h2>
+                  <p className="text-violet-200 mt-3 line-clamp-3">{spotlight.description}</p>
+                  <div className="flex items-center gap-4 mt-6">
+                    <span className="text-3xl font-extrabold text-amber-400">Rs {Number(spotlight.price).toLocaleString()}</span>
+                    {spotlight.oldPrice && (
+                      <span className="text-violet-300 line-through text-lg">Rs {Number(spotlight.oldPrice).toLocaleString()}</span>
+                    )}
+                  </div>
+                  <div>
+                    <Link to={productPath(spotlight)} className="inline-block mt-7 bg-amber-500 hover:bg-amber-400 text-violet-950 font-extrabold px-8 py-3.5 rounded-full transition shadow-lg">
+                      Order Now →
+                    </Link>
+                  </div>
+                </div>
+                <div className="order-1 md:order-2 relative min-h-[260px] md:min-h-[380px]">
+                  <img src={spotlight.image} alt={spotlight.name} className="absolute inset-0 w-full h-full object-cover" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Why Choose Us — footer se upar wala section */}
       <section>
