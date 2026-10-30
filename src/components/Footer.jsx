@@ -43,7 +43,7 @@ export default function Footer() {
               </svg>
             </a>
             <a
-              href="https://www.instagram.com/"
+              href="https://www.instagram.com/aurastorepk.official"
               target="_blank"
               rel="noreferrer"
               aria-label="Instagram"
