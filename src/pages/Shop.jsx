@@ -107,7 +107,7 @@ const WHY_FEATURES = [
   },
   {
     title: "Friendly Support",
-    text: "Questions about your order? Reach us Mon–Sat, 9 AM – 6 PM on call, email or WhatsApp.",
+    text: "Questions about your order? Reach us anytime — we are available 24/7 on call, email or WhatsApp.",
     icon: (
       <>
         <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z" />
@@ -171,6 +171,12 @@ export default function Shop() {
     return () => clearInterval(t);
   }, [paused]);
 
+  // Search likhte hi page khud products wale hisse par chala jaye — warna results boht neeche hote hain
+  // aur customer ko lagta hai ke search kaam hi nahi kar rahi
+  useEffect(() => {
+    if (searchTerm) document.getElementById("products")?.scrollIntoView({ behavior: "smooth" });
+  }, [searchTerm]);
+
   const goToCategory = (cat) => {
     setSelectedCategory(cat);
     document.getElementById("products")?.scrollIntoView({ behavior: "smooth" });
@@ -218,7 +224,7 @@ export default function Shop() {
 
   // Search filter
  const filteredProducts = products.filter(p =>
-  p.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+  (p.name.toLowerCase().includes(searchTerm.toLowerCase()) || (p.category || "").toLowerCase().includes(searchTerm.toLowerCase())) &&
   (selectedCategory === "All" || p.category === selectedCategory)
 );
 
@@ -384,7 +390,7 @@ export default function Shop() {
       </section>
 
       {/* On Sale Section */}
-      {products.length >= 5 && saleProducts.length > 0 && (
+      {(!searchTerm && products.length >= 5 && saleProducts.length > 0) && (
         <section>
           <div className="max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-14">
             <div className="mb-8">
@@ -399,7 +405,7 @@ export default function Shop() {
       )}
 
       {/* New Arrivals Section */}
-      {products.length >= 5 && (
+      {(!searchTerm && products.length >= 5) && (
         <section>
           <div className="max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-14">
             <div className="mb-8">
@@ -454,7 +460,7 @@ export default function Shop() {
             <span className="text-amber-500 font-bold tracking-[0.25em] uppercase text-xs">Our Collection</span>
             <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mt-2">Featured Products</h2>
             <p className="text-gray-500 mt-2">
-              Handpicked just for you — {displayedProducts.length} product{displayedProducts.length !== 1 ? "s" : ""}
+              {searchTerm ? `Search results for "${searchTerm}" — ` : "Handpicked just for you — "}{displayedProducts.length} product{displayedProducts.length !== 1 ? "s" : ""}
             </p>
           </div>
 

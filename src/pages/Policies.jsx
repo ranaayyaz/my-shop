@@ -16,7 +16,7 @@ function PolicyLayout({ title, children }) {
             <p className="text-sm mt-1">
               Contact us on WhatsApp <span className="font-semibold text-gray-900">0328 4433025</span>, call{" "}
               <span className="font-semibold text-gray-900">+92 328 4433025</span> or email{" "}
-              <span className="font-semibold text-gray-900">support@aurastore.com</span> (Mon–Sat, 9:00 AM – 6:00 PM).
+              <span className="font-semibold text-gray-900">support@aurastore.com</span> — we are available 24 hours, 7 days a week.
             </p>
           </div>
         </div>

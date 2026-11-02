@@ -120,7 +120,7 @@ export default function Footer() {
               </a>
             </li>
             <li className="flex items-center gap-3">
-              <span className="text-amber-400">🕘</span> Mon – Sat, 9:00 AM – 6:00 PM
+              <span className="text-amber-400">🕐</span> Open 24 Hours — 7 Days a Week
             </li>
           </ul>
           {/* Payment Icons — professional websites ki tarha */}
