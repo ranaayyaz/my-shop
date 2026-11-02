@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import Header from "../components/Header";
 // Home page ke barray banners (carousel) — image ya text badalna ho to sirf yahin se badle ga
@@ -136,6 +136,9 @@ export default function Shop() {
 
   // Cart ab shared hai (CartContext se) — add yahan karo, Cart page par nazar ayega
   const { addToCart } = useCart();
+  const navigate = useNavigate();
+  // Buy Now — product cart me daal kar seedha Cart (checkout) page par le jao
+  const buyNow = (p) => { addToCart(p); navigate("/cart"); };
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -221,6 +224,12 @@ export default function Shop() {
 
   // Neeche walay baray Featured section ke liye — Headphones wala product khud uthata hai
   const spotlight = products.find(p => (p.name || "").toLowerCase().includes("bluetooth headphones"));
+
+  // Home (All) par sirf pehli 8 products dikhao — baqi sirf category click par (rush na ho)
+  const homeProducts = [...filteredProducts]
+    .sort((a, b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0))
+    .slice(0, 8);
+  const displayedProducts = (selectedCategory === "All" && !searchTerm) ? homeProducts : filteredProducts;
   // Home page ke khaas sections
   const saleProducts = products.filter(x => x.oldPrice && Number(x.oldPrice) > Number(x.price)).slice(0, 4);
   const newArrivals = [...products]
@@ -248,10 +257,32 @@ export default function Shop() {
                       </span>
                     )}
                     {onSale && (
-                      <span className="absolute bottom-3 left-3 bg-white text-gray-900 text-xs font-semibold px-4 py-1.5 rounded-full shadow">
+                      <span className="absolute top-3 right-3 bg-white text-gray-900 text-xs font-semibold px-4 py-1.5 rounded-full shadow">
                         Sale
                       </span>
                     )}
+                    {/* Hover buttons — image ke neeche: Add to Cart (safed) + Buy Now (amber).
+                        Desktop par sirf hover par ayenge, mobile par hamesha nazar ayenge (wahan hover nahi hota) */}
+                    <div className="absolute inset-x-0 bottom-0 p-3 pt-10 bg-gradient-to-t from-violet-950/70 via-violet-950/25 to-transparent flex gap-2 transition-all duration-300 pointer-events-none lg:opacity-0 lg:translate-y-3 lg:group-hover:opacity-100 lg:group-hover:translate-y-0">
+                      <button
+                        onClick={() => addToCart(p)}
+                        className="pointer-events-auto flex-1 bg-white text-violet-900 text-xs md:text-sm font-bold py-2.5 rounded-full shadow-lg hover:bg-violet-100 transition flex items-center justify-center gap-1.5"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        Add to Cart
+                      </button>
+                      <button
+                        onClick={() => buyNow(p)}
+                        className="pointer-events-auto flex-1 bg-amber-500 text-violet-950 text-xs md:text-sm font-extrabold py-2.5 rounded-full shadow-lg hover:bg-amber-400 transition flex items-center justify-center gap-1.5"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                        Buy Now
+                      </button>
+                    </div>
                   </div>
                   <div className="p-4 flex flex-col flex-grow">
                     {p.category && (
@@ -269,20 +300,9 @@ export default function Shop() {
                       ))}
                       <span className="text-xs font-bold text-gray-700 ml-1.5">5.0</span>
                     </div>
-                    <div className="flex items-end justify-between mt-auto pt-2">
-                      <div>
-                        <p className={`text-xs text-gray-400 line-through h-4 ${onSale ? "" : "invisible"}`}>{onSale ? `Rs ${p.oldPrice}` : "Rs 0"}</p>
-                        <p className="font-extrabold text-violet-900 text-base md:text-lg leading-tight">Rs {p.price}</p>
-                      </div>
-                      <button
-                        onClick={() => addToCart(p)}
-                        className="bg-violet-900 text-white p-2.5 rounded-full hover:bg-violet-700 hover:scale-110 transition shadow-md flex items-center justify-center shrink-0"
-                        title="Add to Cart"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                        </svg>
-                      </button>
+                    <div className="mt-auto pt-2">
+                      <p className={`text-xs text-gray-400 line-through h-4 ${onSale ? "" : "invisible"}`}>{onSale ? `Rs ${p.oldPrice}` : "Rs 0"}</p>
+                      <p className="font-extrabold text-violet-900 text-base md:text-lg leading-tight">Rs {p.price}</p>
                     </div>
                   </div>
                 </div>
@@ -434,7 +454,7 @@ export default function Shop() {
             <span className="text-amber-500 font-bold tracking-[0.25em] uppercase text-xs">Our Collection</span>
             <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mt-2">Featured Products</h2>
             <p className="text-gray-500 mt-2">
-              Handpicked just for you — {filteredProducts.length} product{filteredProducts.length !== 1 ? "s" : ""}
+              Handpicked just for you — {displayedProducts.length} product{displayedProducts.length !== 1 ? "s" : ""}
             </p>
           </div>
 
@@ -447,8 +467,11 @@ export default function Shop() {
             </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 md:gap-7">
-              {filteredProducts.map(renderCard)}
+              {displayedProducts.map(renderCard)}
             </div>
+          )}
+          {selectedCategory === "All" && !searchTerm && filteredProducts.length > displayedProducts.length && (
+            <p className="text-center text-gray-500 mt-8">Showing our top picks — tap a category above to explore all products.</p>
           )}
         </div>
       </section>

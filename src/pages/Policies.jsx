@@ -48,8 +48,9 @@ export function ShippingInfo() {
       <div>
         <H2>Shipping Charges</H2>
         <p className="mt-2">
-          A flat shipping fee of <strong className="text-gray-900">Rs 250</strong> applies to every order. The exact
-          total, including shipping, is always shown to you before you place your order — no hidden charges.
+          Delivery is completely <strong className="text-gray-900">FREE</strong> on every order, anywhere in
+          Pakistan — no delivery charges at all. The total shown to you before you place your order is the final
+          amount you pay — no hidden charges.
         </p>
       </div>
       <div>

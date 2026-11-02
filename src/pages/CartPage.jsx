@@ -5,8 +5,9 @@ import { db } from "../firebase";
 import Header from "../components/Header";
 import { useCart } from "../context/CartContext";
 
-// Flat shipping charges (detail page wale popup ki tarah)
-const SHIPPING = 250;
+// Delivery charges — FILHAL FREE hain (Ayyaz ki hidayat, 2026-11-03).
+// Kabhi charges lagane hon to sirf yahan 250 kar dein.
+const SHIPPING = 0;
 // Is amount ya zyada ke order par delivery FREE hai
 const FREE_LIMIT = 3000;
 // Expected delivery date (aaj se 4 din baad)
@@ -171,24 +172,10 @@ export default function CartPage() {
 
             {/* Order Summary + Delivery Form */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 lg:sticky lg:top-6">
-              {/* Free Delivery Progress Bar */}
-              {subtotal < FREE_LIMIT ? (
-                <div className="mb-5">
-                  <p className="text-sm text-gray-700">
-                    Add <strong className="text-gray-900">Rs {(FREE_LIMIT - subtotal).toLocaleString()}</strong> more to get <strong className="text-green-600">FREE delivery!</strong>
-                  </p>
-                  <div className="w-full h-2.5 bg-gray-200 rounded-full mt-2 overflow-hidden">
-                    <div
-                      className="h-full bg-gradient-to-r from-amber-400 to-green-500 rounded-full transition-all duration-500"
-                      style={{ width: `${Math.min(100, (subtotal / FREE_LIMIT) * 100)}%` }}
-                    ></div>
-                  </div>
-                </div>
-              ) : (
-                <div className="mb-5 bg-green-50 border border-green-200 text-green-800 rounded-xl px-4 py-3 text-sm font-bold text-center">
-                  🎉 You have unlocked FREE delivery!
-                </div>
-              )}
+              {/* Delivery filhal bilkul FREE hai — customer ko khushkhabri wali patti */}
+              <div className="mb-5 bg-green-50 border border-green-200 text-green-800 rounded-xl px-4 py-3 text-sm font-bold text-center">
+                🎉 Good news — your delivery is absolutely FREE!
+              </div>
               <h2 className="text-xl font-extrabold text-gray-900 mb-4">Order Summary</h2>
               <div className="bg-gray-200/70 rounded-lg p-4 text-sm space-y-1.5 mb-5">
                 <div className="flex justify-between">

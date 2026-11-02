@@ -4,8 +4,9 @@ import { getDocs, collection, addDoc, serverTimestamp } from "firebase/firestore
 import { db } from "../firebase";
 import Header from "../components/Header";
 
-// Flat shipping charges (image wale design ki tarah)
-const SHIPPING = 250;
+// Delivery charges — FILHAL FREE hain (Ayyaz ki hidayat, 2026-11-03).
+// Kabhi charges lagane hon to sirf yahan 250 kar dein, baqi sab khud theek ho jayega.
+const SHIPPING = 0;
 // Is amount ya zyada ke order par delivery FREE hai
 const FREE_LIMIT = 3000;
 // Expected delivery date (aaj se 4 din baad) — customer ko dikhane ke liye
@@ -203,17 +204,13 @@ export default function ProductDetail() {
               <span className="text-xl">🚚</span>
               <p className="text-sm">
                 Order today — expected delivery by <strong>{expectedDate()}</strong>
-                {subtotal >= FREE_LIMIT ? (
-                  <> · <strong>Your delivery is FREE!</strong></>
-                ) : (
-                  <> · Add <strong>Rs {(FREE_LIMIT - subtotal).toLocaleString()}</strong> more for FREE delivery</>
-                )}
+                <> · <strong>And your delivery is absolutely FREE! 🎉</strong></>
               </p>
             </div>
 
             <button
               onClick={() => setShowForm(true)}
-              className="w-full bg-violet-900 text-white py-3.5 rounded-xl font-bold hover:bg-violet-800 transition shadow-lg text-lg"
+              className="w-full bg-gradient-to-r from-violet-900 to-violet-700 text-white py-3.5 rounded-full font-bold hover:from-violet-800 hover:to-violet-600 transition shadow-lg shadow-violet-900/25 text-lg"
             >
               Order Now
             </button>
@@ -227,7 +224,7 @@ export default function ProductDetail() {
               </div>
               <div className="bg-white border border-gray-200 rounded-xl py-3 px-1 text-center">
                 <p className="text-lg">🚚</p>
-                <p className="text-[11px] font-bold text-gray-700 mt-1 leading-tight">Delivery in 2–5 Days</p>
+                <p className="text-[11px] font-bold text-gray-700 mt-1 leading-tight">FREE Delivery in 2–5 Days</p>
               </div>
               <div className="bg-white border border-gray-200 rounded-xl py-3 px-1 text-center">
                 <p className="text-lg">↩️</p>
@@ -300,46 +297,54 @@ export default function ProductDetail() {
 
       {/* Order Popup (Modal) — Cash on Delivery design */}
       {showForm && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl">
+        <div className="fixed inset-0 bg-violet-950/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-3xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl border border-violet-100">
 
             {!orderPlaced ? (
               <>
-                {/* Popup Header */}
-                <div className="flex items-center gap-2 px-5 py-4 border-b border-gray-100">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-900" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
-                  </svg>
-                  <h2 className="text-lg font-extrabold tracking-wide text-gray-900 uppercase">Cash on Delivery</h2>
-                  <button onClick={() => setShowForm(false)} className="ml-auto text-gray-500 hover:text-gray-900">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
+                {/* Popup Header — website theme: violet gradient + amber line */}
+                <div className="relative bg-gradient-to-r from-violet-950 via-violet-900 to-violet-800 px-5 py-3">
+                  <div className="absolute top-0 left-0 right-0 h-1 bg-amber-500"></div>
+                  <div className="flex items-center gap-3">
+                    <span className="bg-amber-500 rounded-xl p-2 shadow-md shrink-0">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-violet-950" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                      </svg>
+                    </span>
+                    <div>
+                      <h2 className="text-base md:text-lg font-extrabold tracking-wide text-white uppercase leading-tight">Cash on Delivery</h2>
+                      <p className="text-[11px] font-semibold tracking-[0.18em] uppercase text-amber-400 mt-0.5">Aura Store · Pay at your doorstep</p>
+                    </div>
+                    <button onClick={() => setShowForm(false)} className="ml-auto bg-white/10 hover:bg-white/20 text-white rounded-full p-1.5 transition shrink-0">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
 
-                <div className="px-5 py-4">
+                <div className="px-5 py-3">
                   {/* Product Box */}
-                  <div className="flex gap-3 border border-gray-200 rounded-xl p-3 mb-4">
+                  <div className="flex gap-3 border-2 border-violet-100 bg-violet-50/60 rounded-2xl p-2.5 mb-3">
                     <div className="relative shrink-0">
-                      <img src={product.image} alt={product.name} className="w-16 h-16 object-cover rounded-lg" />
-                      <span className="absolute -top-2 -right-2 bg-gray-500 text-white text-[10px] font-bold h-5 w-5 flex items-center justify-center rounded-full">
+                      <img src={product.image} alt={product.name} className="w-14 h-14 object-cover rounded-xl" />
+                      <span className="absolute -top-2 -right-2 bg-violet-900 text-white text-[10px] font-bold h-5 w-5 flex items-center justify-center rounded-full">
                         {qty}
                       </span>
                     </div>
                     <div>
                       <p className="font-bold text-gray-900 text-sm leading-snug">{product.name}</p>
-                      <p className="text-sm font-semibold text-gray-800 mt-0.5">{fmt(product.price)}</p>
-                      <div className="inline-flex items-center border border-gray-300 rounded mt-2">
-                        <button onClick={() => setQty(q => Math.max(1, q - 1))} className="px-2.5 py-1 font-bold text-gray-700 hover:bg-gray-100">−</button>
+                      <p className="text-sm font-extrabold text-violet-900 mt-0.5">{fmt(product.price)}</p>
+                      <div className="inline-flex items-center border border-violet-200 bg-white rounded-full mt-2 shadow-sm">
+                        <button onClick={() => setQty(q => Math.max(1, q - 1))} className="px-2.5 py-0.5 font-bold text-violet-900 hover:bg-violet-100 rounded-full">−</button>
                         <span className="w-8 text-center text-sm font-bold">{qty}</span>
-                        <button onClick={() => setQty(q => q + 1)} className="px-2.5 py-1 font-bold text-gray-700 hover:bg-gray-100">+</button>
+                        <button onClick={() => setQty(q => q + 1)} className="px-2.5 py-0.5 font-bold text-violet-900 hover:bg-violet-100 rounded-full">+</button>
                       </div>
                     </div>
                   </div>
 
                   {/* Price Summary */}
-                  <div className="bg-gray-200/70 rounded-lg p-4 mb-4 text-sm space-y-1.5">
+                  <div className="bg-violet-50 border border-violet-100 rounded-2xl p-3 mb-3 text-sm space-y-1">
                     <div className="flex justify-between">
                       <span className="text-gray-700">Subtotal</span>
                       <span className="text-gray-900">{fmt(subtotal)}</span>
@@ -348,79 +353,82 @@ export default function ProductDetail() {
                       <span className="text-gray-700">Shipping</span>
                       <span className={shippingFee === 0 ? "font-bold text-green-600" : "text-gray-900"}>{shippingFee === 0 ? "FREE" : fmt(shippingFee)}</span>
                     </div>
-                    <div className="flex justify-between font-extrabold text-base pt-1">
-                      <span className="text-gray-900">Total</span>
-                      <span className="text-gray-900">{fmt(total)}</span>
+                    <div className="flex justify-between font-extrabold text-base border-t border-violet-200 mt-1 pt-2.5">
+                      <span className="text-violet-950">Total</span>
+                      <span className="text-violet-900">{fmt(total)}</span>
                     </div>
                   </div>
 
                   {/* Shipping Method */}
-                  <p className="text-sm font-medium text-gray-700 mb-1.5">Shipping method</p>
-                  <div className="flex items-center gap-3 border-2 border-amber-500 rounded-xl px-4 py-3 mb-5">
-                    <input type="radio" checked readOnly className="w-5 h-5 accent-blue-600" />
-                    <span className="font-bold text-gray-900">Standard</span>
+                  <p className="text-sm font-bold text-gray-800 mb-1.5">Shipping method</p>
+                  <div className="flex items-center gap-3 border-2 border-violet-600 bg-violet-50 rounded-2xl px-4 py-2.5 mb-4 shadow-sm">
+                    <input type="radio" checked readOnly className="w-5 h-5 accent-violet-700" />
+                    <span className="font-bold text-violet-950 block leading-tight">Standard</span>
                     <span className={`ml-auto ${shippingFee === 0 ? "font-bold text-green-600" : "text-gray-600"}`}>{shippingFee === 0 ? "FREE" : fmt(shippingFee)}</span>
                   </div>
 
                   {/* Address Form */}
-                  <h3 className="text-center font-extrabold text-gray-900 mb-4">Enter your shipping address</h3>
-                  <div className="space-y-3.5">
+                  <div className="text-center mb-3">
+                    <h3 className="font-extrabold text-gray-900">Enter your shipping address</h3>
+                    <div className="w-10 h-1 bg-amber-500 rounded-full mx-auto mt-1.5"></div>
+                  </div>
+                  <div className="space-y-2.5">
                     <div>
-                      <label className="block text-sm text-gray-700 mb-1">Full Name <span className="text-red-500">*</span></label>
+                      <label className="block text-sm font-semibold text-gray-800 mb-1">Full Name <span className="text-red-500">*</span></label>
                       <div className="relative">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 absolute left-3 top-3 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 absolute left-3 top-2.5 text-violet-500" viewBox="0 0 20 20" fill="currentColor">
                           <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
                         </svg>
                         <input
                           placeholder="Full Name"
                           value={form.name}
                           onChange={e => setForm({ ...form, name: e.target.value })}
-                          className="w-full border border-gray-200 bg-gray-50 rounded-lg p-2.5 pl-10 shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-600 transition"
+                          className="w-full border border-gray-300 bg-white rounded-xl p-2.5 pl-10 shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-600 focus:border-violet-600 transition placeholder:text-gray-400"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-sm text-gray-700 mb-1">Contact Number <span className="text-red-500">*</span></label>
+                      <label className="block text-sm font-semibold text-gray-800 mb-1">Contact Number <span className="text-red-500">*</span></label>
                       <div className="relative">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 absolute left-3 top-3 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 absolute left-3 top-2.5 text-violet-500" viewBox="0 0 20 20" fill="currentColor">
                           <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
                         </svg>
                         <input
                           placeholder="03001234567"
                           value={form.phone}
                           onChange={e => setForm({ ...form, phone: e.target.value })}
-                          className="w-full border border-gray-200 bg-gray-50 rounded-lg p-2.5 pl-10 shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-600 transition"
+                          className="w-full border border-gray-300 bg-white rounded-xl p-2.5 pl-10 shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-600 focus:border-violet-600 transition placeholder:text-gray-400"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-sm text-gray-700 mb-1">Complete Address <span className="text-red-500">*</span></label>
+                      <label className="block text-sm font-semibold text-gray-800 mb-1">Complete Address <span className="text-red-500">*</span></label>
                       <div className="relative">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 absolute left-3 top-3 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 absolute left-3 top-2.5 text-violet-500" viewBox="0 0 20 20" fill="currentColor">
                           <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                         </svg>
                         <input
                           placeholder="Address"
                           value={form.address}
                           onChange={e => setForm({ ...form, address: e.target.value })}
-                          className="w-full border border-gray-200 bg-gray-50 rounded-lg p-2.5 pl-10 shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-600 transition"
+                          className="w-full border border-gray-300 bg-white rounded-xl p-2.5 pl-10 shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-600 focus:border-violet-600 transition placeholder:text-gray-400"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-sm text-gray-700 mb-1">City <span className="text-red-500">*</span></label>
+                      <label className="block text-sm font-semibold text-gray-800 mb-1">City <span className="text-red-500">*</span></label>
                       <div className="relative">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 absolute left-3 top-3 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 absolute left-3 top-2.5 text-violet-500" viewBox="0 0 20 20" fill="currentColor">
                           <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                         </svg>
                         <input
                           placeholder="City"
                           value={form.city}
                           onChange={e => setForm({ ...form, city: e.target.value })}
-                          className="w-full border border-gray-200 bg-gray-50 rounded-lg p-2.5 pl-10 shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-600 transition"
+                          className="w-full border border-gray-300 bg-white rounded-xl p-2.5 pl-10 shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-600 focus:border-violet-600 transition placeholder:text-gray-400"
                         />
                       </div>
                     </div>
@@ -429,7 +437,7 @@ export default function ProductDetail() {
                   <button
                     onClick={placeOrder}
                     disabled={placing}
-                    className="w-full bg-violet-900 text-white py-3.5 rounded-lg mt-5 font-extrabold uppercase hover:bg-violet-800 transition shadow disabled:opacity-60"
+                    className="w-full bg-gradient-to-r from-violet-900 to-violet-700 text-white py-3 rounded-full mt-4 font-extrabold uppercase tracking-wide hover:from-violet-800 hover:to-violet-600 transition shadow-lg shadow-violet-900/25 disabled:opacity-60"
                   >
                     {placing ? "Placing Order..." : `Complete Order - ${fmt(total)}`}
                   </button>
@@ -439,8 +447,8 @@ export default function ProductDetail() {
               <>
                 {/* Professional Confirmation */}
                 <div className="text-center px-6 py-8">
-                  <div className="w-20 h-20 mx-auto mb-5 bg-green-100 rounded-full flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <div className="w-20 h-20 mx-auto mb-5 bg-green-500 rounded-full flex items-center justify-center shadow-lg shadow-green-500/30 ring-8 ring-green-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                     </svg>
                   </div>
@@ -452,7 +460,7 @@ export default function ProductDetail() {
                     🚚 Expected delivery by {expectedDate()}
                   </p>
 
-                  <div className="bg-gray-200/70 rounded-lg p-4 mb-6 text-sm space-y-1.5">
+                  <div className="bg-violet-50 border border-violet-100 rounded-2xl p-4 mb-6 text-sm space-y-1.5">
                     <div className="flex justify-between">
                       <span className="text-gray-700">{product.name} × {qty}</span>
                       <span className="text-gray-900">{fmt(subtotal)}</span>
@@ -461,15 +469,15 @@ export default function ProductDetail() {
                       <span className="text-gray-700">Shipping</span>
                       <span className={shippingFee === 0 ? "font-bold text-green-600" : "text-gray-900"}>{shippingFee === 0 ? "FREE" : fmt(shippingFee)}</span>
                     </div>
-                    <div className="flex justify-between font-extrabold text-base pt-1">
-                      <span className="text-gray-900">Total (Cash on Delivery)</span>
-                      <span className="text-gray-900">{fmt(total)}</span>
+                    <div className="flex justify-between font-extrabold text-base border-t border-violet-200 mt-1 pt-2.5">
+                      <span className="text-violet-950">Total (Cash on Delivery)</span>
+                      <span className="text-violet-900">{fmt(total)}</span>
                     </div>
                   </div>
 
                   <button
                     onClick={() => nav("/")}
-                    className="w-full bg-violet-900 text-white py-3.5 rounded-xl font-bold hover:bg-violet-800 transition shadow-lg"
+                    className="w-full bg-gradient-to-r from-violet-900 to-violet-700 text-white py-3.5 rounded-full font-bold hover:from-violet-800 hover:to-violet-600 transition shadow-lg shadow-violet-900/25"
                   >
                     Continue Shopping
                   </button>
