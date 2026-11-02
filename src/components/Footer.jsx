@@ -43,7 +43,7 @@ export default function Footer() {
               </svg>
             </a>
             <a
-              href="https://www.instagram.com/aurastorepk.official"
+              href="https://www.instagram.com/aurastorepk.vercel.app"
               target="_blank"
               rel="noreferrer"
               aria-label="Instagram"
@@ -54,7 +54,7 @@ export default function Footer() {
               </svg>
             </a>
             <a
-              href="https://www.facebook.com/"
+              href="https://www.facebook.com/profile.php?id=61596205256844"
               target="_blank"
               rel="noreferrer"
               aria-label="Facebook"
