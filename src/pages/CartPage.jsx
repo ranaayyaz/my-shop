@@ -131,7 +131,7 @@ export default function CartPage() {
         </div>
       ) : (
         /* ===== Cart Page ===== */
-        <div className="max-w-7xl mx-auto px-4 py-8 md:py-10">
+        <div className="max-w-7xl mx-auto px-4 pt-8 md:pt-10 pb-28 lg:pb-10">
           {/* Page Header — website theme wali patti */}
           <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-violet-950 via-violet-900 to-violet-800 px-6 py-6 md:px-8 mb-6 md:mb-8 shadow-xl">
             <div className="absolute top-0 left-0 right-0 h-1 bg-amber-500"></div>
@@ -162,28 +162,30 @@ export default function CartPage() {
                 </div>
                 <div className="divide-y divide-gray-100">
                   {cart.map(i => (
-                    <div key={i.id} className="px-5 md:px-6 py-4 flex gap-4 items-center">
-                      <Link to={productPath(i)} className="shrink-0">
-                        <img src={i.image} alt={i.name} className="w-20 h-20 md:w-24 md:h-24 object-cover rounded-2xl border border-gray-100" />
-                      </Link>
-                      <div className="flex-1 min-w-0">
-                        <Link to={productPath(i)}>
-                          <h3 className="font-bold text-gray-900 leading-snug hover:text-violet-900">{i.name}</h3>
+                    <div key={i.id} className="px-4 md:px-6 py-4">
+                      <div className="flex gap-3 md:gap-4">
+                        <Link to={productPath(i)} className="shrink-0">
+                          <img src={i.image} alt={i.name} className="w-20 h-20 md:w-24 md:h-24 object-cover rounded-2xl border border-gray-100" />
                         </Link>
-                        <p className="text-sm text-gray-500 mt-0.5">{fmt(i.price)} each</p>
-                        <div className="inline-flex items-center border border-violet-200 bg-white rounded-full mt-2 shadow-sm">
-                          <button onClick={() => updateQty(i.id, i.qty - 1)} className="px-3 py-1 font-bold text-violet-900 hover:bg-violet-100 rounded-full">−</button>
-                          <span className="w-8 text-center text-sm font-bold">{i.qty}</span>
-                          <button onClick={() => updateQty(i.id, i.qty + 1)} className="px-3 py-1 font-bold text-violet-900 hover:bg-violet-100 rounded-full">+</button>
+                        <div className="flex-1 min-w-0">
+                          <Link to={productPath(i)}>
+                            <h3 className="font-bold text-gray-900 leading-snug hover:text-violet-900">{i.name}</h3>
+                          </Link>
+                          <p className="text-sm text-gray-500 mt-0.5">{fmt(i.price)} each</p>
                         </div>
-                      </div>
-                      <div className="text-right shrink-0">
-                        <p className="font-extrabold text-violet-900 md:text-lg">{fmt(i.price * i.qty)}</p>
-                        <button onClick={() => removeFromCart(i.id)} className="text-red-400 hover:text-red-600 transition mt-2" title="Remove item">
+                        <button onClick={() => removeFromCart(i.id)} className="shrink-0 self-start text-red-400 hover:text-red-600 transition" title="Remove item">
                           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                             <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
                           </svg>
                         </button>
+                      </div>
+                      <div className="flex items-center justify-between mt-3">
+                        <div className="inline-flex items-center border border-violet-200 bg-white rounded-full shadow-sm">
+                          <button onClick={() => updateQty(i.id, i.qty - 1)} className="px-3 py-1.5 font-bold text-violet-900 hover:bg-violet-100 rounded-full">−</button>
+                          <span className="w-8 text-center text-sm font-bold">{i.qty}</span>
+                          <button onClick={() => updateQty(i.id, i.qty + 1)} className="px-3 py-1.5 font-bold text-violet-900 hover:bg-violet-100 rounded-full">+</button>
+                        </div>
+                        <p className="font-extrabold text-violet-900 md:text-lg">{fmt(i.price * i.qty)}</p>
                       </div>
                     </div>
                   ))}
@@ -292,14 +294,16 @@ export default function CartPage() {
                 <span className="ml-auto text-gray-500 text-xs text-right">Pay at your doorstep</span>
               </div>
 
-              <button
-                onClick={placeOrder}
-                disabled={placing}
-                className="w-full bg-gradient-to-r from-violet-900 to-violet-700 text-white py-3.5 rounded-full font-extrabold uppercase tracking-wide hover:from-violet-800 hover:to-violet-600 transition shadow-lg shadow-violet-900/25 disabled:opacity-60"
-              >
-                {placing ? "Placing Order..." : `Complete Order - ${fmt(total)}`}
-              </button>
-              <p className="text-center text-xs text-gray-400 mt-3">Cash on Delivery — Pay when your order arrives</p>
+              <div className="hidden lg:block">
+                <button
+                  onClick={placeOrder}
+                  disabled={placing}
+                  className="w-full bg-gradient-to-r from-violet-900 to-violet-700 text-white py-3.5 rounded-full font-extrabold uppercase tracking-wide hover:from-violet-800 hover:to-violet-600 transition shadow-lg shadow-violet-900/25 disabled:opacity-60"
+                >
+                  {placing ? "Placing Order..." : `Complete Order - ${fmt(total)}`}
+                </button>
+                <p className="text-center text-xs text-gray-400 mt-3">Cash on Delivery — Pay when your order arrives</p>
+              </div>
 
               {/* Bharosay wali chand lines — khali jagah bhi bhare gi, customer ka aitmaad bhi barhe ga */}
               <div className="border-t border-gray-100 mt-5 pt-4 space-y-2.5 text-sm text-gray-700">
@@ -307,6 +311,24 @@ export default function CartPage() {
                 <p className="flex items-center gap-2.5"><span className="text-base">🚚</span> Fast delivery in 2–5 working days</p>
                 <p className="flex items-center gap-2.5"><span className="text-base">↩️</span> 7-day easy exchange policy</p>
               </div>
+            </div>
+          </div>
+
+          {/* Mobile sticky order bar — Complete Order ka button hamesha ungli ke neeche rahe,
+              customer ko neeche tak scroll na karna pare (sirf mobile par, desktop par card wala button hai) */}
+          <div className="fixed bottom-0 inset-x-0 z-40 lg:hidden bg-white/95 backdrop-blur border-t border-gray-200 shadow-[0_-4px_24px_rgba(0,0,0,0.10)] px-4 py-3 pr-24">
+            <div className="flex items-center gap-3">
+              <div className="shrink-0">
+                <p className="text-[11px] text-gray-500 leading-tight">Total</p>
+                <p className="font-extrabold text-violet-900 leading-tight">{fmt(total)}</p>
+              </div>
+              <button
+                onClick={placeOrder}
+                disabled={placing}
+                className="flex-1 bg-gradient-to-r from-violet-900 to-violet-700 text-white py-3 rounded-full font-extrabold uppercase text-sm tracking-wide shadow-lg shadow-violet-900/25 disabled:opacity-60"
+              >
+                {placing ? "Placing..." : "Complete Order"}
+              </button>
             </div>
           </div>
         </div>

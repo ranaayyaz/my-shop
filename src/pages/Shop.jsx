@@ -267,28 +267,6 @@ export default function Shop() {
                         Sale
                       </span>
                     )}
-                    {/* Hover buttons — image ke neeche: Add to Cart (safed) + Buy Now (amber).
-                        Desktop par sirf hover par ayenge, mobile par hamesha nazar ayenge (wahan hover nahi hota) */}
-                    <div className="absolute inset-x-0 bottom-0 p-3 pt-10 bg-gradient-to-t from-violet-950/70 via-violet-950/25 to-transparent flex gap-2 transition-all duration-300 pointer-events-none lg:opacity-0 lg:translate-y-3 lg:group-hover:opacity-100 lg:group-hover:translate-y-0">
-                      <button
-                        onClick={() => addToCart(p)}
-                        className="pointer-events-auto flex-1 bg-white text-violet-900 text-xs md:text-sm font-bold py-2.5 rounded-full shadow-lg hover:bg-violet-100 transition flex items-center justify-center gap-1.5"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                        </svg>
-                        Add to Cart
-                      </button>
-                      <button
-                        onClick={() => buyNow(p)}
-                        className="pointer-events-auto flex-1 bg-amber-500 text-violet-950 text-xs md:text-sm font-extrabold py-2.5 rounded-full shadow-lg hover:bg-amber-400 transition flex items-center justify-center gap-1.5"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                        </svg>
-                        Buy Now
-                      </button>
-                    </div>
                   </div>
                   <div className="p-4 flex flex-col flex-grow">
                     {p.category && (
@@ -309,6 +287,28 @@ export default function Shop() {
                     <div className="mt-auto pt-2">
                       <p className={`text-xs text-gray-400 line-through h-4 ${onSale ? "" : "invisible"}`}>{onSale ? `Rs ${p.oldPrice}` : "Rs 0"}</p>
                       <p className="font-extrabold text-violet-900 text-base md:text-lg leading-tight">Rs {p.price}</p>
+                    </div>
+                    {/* Order buttons — ab image ke upar nahi, card ke neeche saaf patti me.
+                        Mobile par Buy Now pehle (upar), Add to Cart neeche; baray screen par dono sath sath. */}
+                    <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+                      <button
+                        onClick={() => addToCart(p)}
+                        className="order-2 sm:order-1 flex-1 whitespace-nowrap bg-white border-2 border-violet-900 text-violet-900 text-xs font-bold py-2.5 px-2 rounded-full hover:bg-violet-50 transition flex items-center justify-center gap-1.5"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        Add to Cart
+                      </button>
+                      <button
+                        onClick={() => buyNow(p)}
+                        className="order-1 sm:order-2 flex-1 whitespace-nowrap bg-amber-500 text-violet-950 text-xs font-extrabold py-2.5 px-2 rounded-full shadow hover:bg-amber-400 transition flex items-center justify-center gap-1.5"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                        Buy Now
+                      </button>
                     </div>
                   </div>
                 </div>
