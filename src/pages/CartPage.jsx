@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase";
@@ -34,6 +34,11 @@ export default function CartPage() {
   const [form, setForm] = useState({ name: "", phone: "", address: "", city: "" });
   const [placing, setPlacing] = useState(false);
   const [placedOrder, setPlacedOrder] = useState(null);
+  // Order lagte hi page sab se upar le jao — warna customer wahi neeche (footer ke paas) atka rehta hai
+  // aur "Order Confirmed" wala hissa use nazar hi nahi ata
+  useEffect(() => {
+    if (placedOrder) window.scrollTo(0, 0);
+  }, [placedOrder]);
 
   const shippingFee = cart.length === 0 ? 0 : subtotal >= FREE_LIMIT ? 0 : SHIPPING;
   const total = subtotal + shippingFee;
