@@ -40,16 +40,21 @@ export default function AddProduct() {
     })();
   }, [editId]);
 
-  // Yahan apni ImgBB API Key dalein
-  // Photo ko compress karke data-URL banana — photo seedha apne database (Firestore)
-  // me save hogi, is liye bari photo ko pehle chhota karna zaroori hai (limit 1MB hai)
-  const compressImage = (file) =>
+  // ===== Cloudinary image upload (2026-11-03) =====
+  // Photo ab Firestore database ke ANDAR (data URL) save NAHI hoti — wahi site ki slow loading ki wajah thi.
+  // Photo Cloudinary par jati hai aur database me sirf us ka chhota sa link save hota hai,
+  // is liye website tez khulti hai. (Cloud name aur preset public hain — koi secret nahi.)
+  const CLOUDINARY_CLOUD = "dlqzjthos";
+  const CLOUDINARY_PRESET = "aura_unsigned";
+
+  // Bari photo ko upload se pehle halka sa resize karna, taake upload tez ho
+  const compressToBlob = (file) =>
     new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => {
         const img = new Image();
         img.onload = () => {
-          const MAX = 1000;
+          const MAX = 1200;
           let width = img.width;
           let height = img.height;
           if (width > MAX || height > MAX) {
@@ -61,13 +66,11 @@ export default function AddProduct() {
           canvas.width = width;
           canvas.height = height;
           canvas.getContext("2d").drawImage(img, 0, 0, width, height);
-          let dataUrl = canvas.toDataURL("image/jpeg", 0.75);
-          let q = 0.6;
-          while (dataUrl.length > 900000 && q > 0.25) {
-            dataUrl = canvas.toDataURL("image/jpeg", q);
-            q -= 0.15;
-          }
-          resolve(dataUrl);
+          canvas.toBlob(
+            (blob) => (blob ? resolve(blob) : reject(new Error("Image process nahi ho saki"))),
+            "image/jpeg",
+            0.82
+          );
         };
         img.onerror = reject;
         img.src = reader.result;
@@ -75,6 +78,24 @@ export default function AddProduct() {
       reader.onerror = reject;
       reader.readAsDataURL(file);
     });
+
+  // Photo Cloudinary par bhejna aur us ka tez (auto-format/quality) link wapas lena
+  const uploadToCloudinary = async (file) => {
+    const blob = await compressToBlob(file);
+    const form = new FormData();
+    form.append("file", blob, "product.jpg");
+    form.append("upload_preset", CLOUDINARY_PRESET);
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, {
+      method: "POST",
+      body: form,
+    });
+    const data = await res.json();
+    if (!res.ok || !data.secure_url) {
+      throw new Error(data?.error?.message || "Photo upload fail ho gayi");
+    }
+    // Delivery link me auto format + auto quality + max width 1000 — photo har phone par tez khule gi
+    return data.secure_url.replace("/image/upload/", "/image/upload/f_auto,q_auto,w_1000,c_limit/");
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -88,9 +109,8 @@ export default function AddProduct() {
       // Image: edit mode me purani image hi rahe gi, jab tak nayi na chuni jaye
       let imageUrl = existingImage;
       if (image) {
-        // Photo compress karke seedha database me save hogi
-        // (purana bahir wala upload tareeqa hata diya hai — us ki error se Saving atak jata tha)
-        imageUrl = await compressImage(image);
+        // Photo Cloudinary par jayegi, database me sirf us ka link save hoga (site tez rakhne ke liye)
+        imageUrl = await uploadToCloudinary(image);
       }
 
       // 3. Firestore mein product save karna
